@@ -54,7 +54,7 @@ export function VideoIntro() {
             className="px-8 py-4 bg-[#00ff41] text-black font-semibold text-base rounded-lg"
             style={{ marginTop: "20%" }}
           >
-            Quiero conocer los secretos
+            Entrar a La Bóveda
           </div>
 
           {/* Bottom overlay text */}
@@ -63,7 +63,7 @@ export function VideoIntro() {
               className="text-[#00ff41] tracking-wide font-semibold text-sm text-popover-foreground"
               style={{ opacity: 0.7 }}
             >
-              Acceso guiado a La Bóveda Secreta
+              Inicia un recorrido guiado (con audio)
             </p>
           </div>
         </div>
