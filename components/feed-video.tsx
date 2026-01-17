@@ -24,7 +24,13 @@ export function FeedVideo() {
   const comments = [
     { id: 1, user: "chef_master", text: "Esto se ve increíble! 🔥", time: "2h", avatar: "/male-chef-avatar.png" },
     { id: 2, user: "foodlover23", text: "Necesito esta receta YA", time: "1h", avatar: "/woman-foodie-avatar.jpg" },
-    { id: 3, user: "cooking_pro", text: "Técnica perfecta 👨‍🍳", time: "45min", avatar: "/professional-cook-avatar.jpg" },
+    {
+      id: 3,
+      user: "cooking_pro",
+      text: "Técnica perfecta 👨‍🍳",
+      time: "45min",
+      avatar: "/professional-cook-avatar.jpg",
+    },
     {
       id: 4,
       user: "saboresmx",
@@ -62,20 +68,21 @@ export function FeedVideo() {
     },
   ]
 
-  const goToQuiz = () => {
+  const goToOferta = () => {
+    // Renamed function and changed destination
     if (redirectedRef.current) return
     redirectedRef.current = true
-    router.push("/quiz")
+    router.push("/oferta") // Now redirects to oferta
   }
 
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
 
-    const onEnded = () => goToQuiz()
+    const onEnded = () => goToOferta() // Updated reference
     const onTimeUpdate = () => {
       if (!video.duration || !isFinite(video.duration)) return
-      if (video.currentTime >= video.duration - 0.15) goToQuiz()
+      if (video.currentTime >= video.duration - 0.15) goToOferta() // Updated reference
     }
 
     video.addEventListener("ended", onEnded)

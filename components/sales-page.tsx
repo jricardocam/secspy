@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { Check, ChevronDown, ChevronUp, Lock, Shield, Clock, Flame } from "lucide-react"
+import { useState, useRef } from "react"
+import { Check, ChevronDown, ChevronUp, Lock, Shield, Clock, Flame, Play } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 
@@ -43,9 +43,25 @@ const faqs = [
 
 export function SalesPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [videoStarted, setVideoStarted] = useState(false)
 
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index)
+  }
+
+  const startVideo = async () => {
+    const video = videoRef.current
+    if (!video || videoStarted) return
+
+    try {
+      video.muted = false
+      video.volume = 1
+      await video.play()
+      setVideoStarted(true)
+    } catch (e) {
+      console.log("Play failed:", e)
+    }
   }
 
   return (
@@ -87,6 +103,41 @@ export function SalesPage() {
               <Flame className="h-4 w-4 text-destructive" />
               <span>Se abre por ventanas. Hoy está disponible.</span>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-8">
+        <div className="mx-auto max-w-md">
+          <div className="relative aspect-[9/16] w-full overflow-hidden rounded-lg border border-border bg-card">
+            <video
+              ref={videoRef}
+              className="h-full w-full object-cover"
+              playsInline
+              preload="auto"
+              src="https://recursoexperto.com/wp-content/uploads/2026/01/Video3.mp4"
+            />
+
+            {!videoStarted && (
+              <button
+                onClick={startVideo}
+                className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/40 transition-all hover:bg-black/50"
+                aria-label="Play"
+              >
+                <div
+                  className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-primary bg-black/50 transition-transform hover:scale-110"
+                  style={{ boxShadow: "0 0 20px rgba(0,255,65,0.4)" }}
+                >
+                  <Play className="ml-1 h-8 w-8 text-primary" />
+                </div>
+              </button>
+            )}
+
+            {/* Corner accents */}
+            <div className="pointer-events-none absolute left-0 top-0 h-4 w-4 border-l-2 border-t-2 border-primary" />
+            <div className="pointer-events-none absolute right-0 top-0 h-4 w-4 border-r-2 border-t-2 border-primary" />
+            <div className="pointer-events-none absolute bottom-0 left-0 h-4 w-4 border-b-2 border-l-2 border-primary" />
+            <div className="pointer-events-none absolute bottom-0 right-0 h-4 w-4 border-b-2 border-r-2 border-primary" />
           </div>
         </div>
       </section>
@@ -200,7 +251,9 @@ export function SalesPage() {
         <div className="mx-auto max-w-2xl text-center">
           <Shield className="mx-auto mb-4 h-12 w-12 text-primary" />
           <h2 className="mb-4 text-2xl font-bold text-foreground">Garantía de Sabor</h2>
-          <p className="text-muted-foreground">Acceso de por Vida. Sabor de franquicia replicable si sigues el método.</p>
+          <p className="text-muted-foreground">
+            Acceso de por Vida. Sabor de franquicia replicable si sigues el método.
+          </p>
         </div>
       </section>
 

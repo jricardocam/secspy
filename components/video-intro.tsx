@@ -40,7 +40,7 @@ export function VideoIntro() {
         className="absolute inset-0 w-full h-full object-cover"
         playsInline
         preload="auto"
-        onEnded={() => router.push("/incoming-call")}
+        onEnded={() => router.push("/quiz")} // Redirect to quiz instead of incoming-call
       >
         <source src="https://recursoexperto.com/wp-content/uploads/2026/01/Video1.mp4" type="video/mp4" />
       </video>

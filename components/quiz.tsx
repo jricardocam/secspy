@@ -4,24 +4,46 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 
+const questions = [
+  {
+    question: "¿Por qué quieres dominar el sabor?",
+    options: ["Sabor de franquicia en casa", "Vender y ganar dinero con comida", "Las dos"],
+  },
+  {
+    question: "¿Cuánta experiencia tienes en cocina?",
+    options: ["Principiante", "Intermedio", "Avanzado"],
+  },
+  {
+    question: "¿Cuánto tiempo puedes dedicar a aprender?",
+    options: ["1-2 horas/semana", "3-5 horas/semana", "Más de 5 horas/semana"],
+  },
+]
+
 export function Quiz() {
   const router = useRouter()
+  const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answered, setAnswered] = useState(false)
   const [showResult, setShowResult] = useState(false)
-
-  const options = ["Sabor de franquicia en casa", "Vender y ganar Dinero con comida", "Las dos"]
 
   const handleAnswer = () => {
     setAnswered(true)
 
     setTimeout(() => {
-      setShowResult(true)
+      if (currentQuestion < questions.length - 1) {
+        // Move to next question
+        setCurrentQuestion((prev) => prev + 1)
+        setAnswered(false)
+      } else {
+        // All questions answered, show result
+        setShowResult(true)
+        setTimeout(() => {
+          router.push("/feed")
+        }, 2000)
+      }
     }, 500)
-
-    setTimeout(() => {
-      router.push("/acceso")
-    }, 2500)
   }
+
+  const progress = ((currentQuestion + 1) / questions.length) * 100
 
   return (
     <div className="relative flex h-full flex-col items-center justify-center bg-background px-4">
@@ -38,12 +60,27 @@ export function Quiz() {
       <div className="relative z-10 w-full max-w-md">
         {!showResult ? (
           <>
+            <div className="mb-8">
+              <div className="mb-2 flex justify-between text-xs text-muted-foreground">
+                <span>
+                  Pregunta {currentQuestion + 1} de {questions.length}
+                </span>
+                <span>{Math.round(progress)}%</span>
+              </div>
+              <div className="h-1 w-full rounded-full bg-muted">
+                <div
+                  className="h-1 rounded-full bg-primary transition-all duration-500"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+            </div>
+
             <h1 className="mb-10 text-center text-2xl font-bold leading-tight text-foreground">
-              {"¿Por qué quieres dominar el sabor?"}
+              {questions[currentQuestion].question}
             </h1>
 
             <div className="space-y-4">
-              {options.map((option, index) => (
+              {questions[currentQuestion].options.map((option, index) => (
                 <Button
                   key={index}
                   onClick={handleAnswer}
