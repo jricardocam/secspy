@@ -54,17 +54,24 @@ export function VideoIntro() {
             className="px-8 py-4 bg-[#00ff41] text-black font-semibold text-base rounded-lg"
             style={{ marginTop: "20%" }}
           >
-            Entrar a La Bóveda
+            Iniciar la experiencia interactiva
           </div>
 
           {/* Bottom overlay text */}
-          <div className="absolute bottom-16 left-0 right-0 text-center">
+          <div className="absolute bottom-12 left-0 right-0 text-center flex flex-col items-center gap-2">
             <p
-              className="text-[#00ff41] tracking-wide font-semibold text-sm text-popover-foreground"
+              className="text-[#00ff41] tracking-wide font-semibold text-sm"
               style={{ opacity: 0.7 }}
             >
-              Inicia un recorrido guiado (con audio)
+              ¿Prefieres ir directo?
             </p>
+            <a
+              href="/oferta"
+              onClick={(e) => e.stopPropagation()}
+              className="text-white text-sm underline hover:text-gray-300 transition-colors pointer-events-auto"
+            >
+              Estoy listo: quiero los secretos por $10 USD
+            </a>
           </div>
         </div>
       )}
