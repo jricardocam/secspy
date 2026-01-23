@@ -1,10 +1,10 @@
-import { VideoIntro } from "@/components/video-intro"
+import { Quiz } from "@/components/quiz"
 import { MobileContainer } from "@/components/mobile-container"
 
 export default function Home() {
   return (
     <MobileContainer immersive>
-      <VideoIntro />
+      <Quiz />
     </MobileContainer>
   )
 }
