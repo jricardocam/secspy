@@ -24,10 +24,10 @@ export function FeedVideo() {
     { id: 1, user: "carlos_grill", text: "Soy ex-gerente de una sucursal y confirmo que los procesos son idénticos. Borra esto antes que lo vean jaja", time: "2h", avatar: "/avatars/avatar-01.jpg", likes: 245 },
     { id: 2, user: "valery_foodie", text: "Acabo de hacer la salsa secreta para la cena y mi esposo juraba que las pedimos por delivery. 10/10", time: "5h", avatar: "/avatars/avatar-02.jpg", likes: 892 },
     { id: 3, user: "mister_burger", text: "Vienen las medidas exactas o son al tanteo?", time: "1d", avatar: "/avatars/avatar-03.jpg", likes: 56, replies: [{ user: "chef_secreto", text: "Viene todo pesado en gramos exactos hermano, es la ficha técnica real." }] },
-    { id: 4, user: "lupita_rodriguez", text: "Yo pague $10 y me llegaron al correo al instante, estan super completos los recetarios.", time: "1d", avatar: "/avatars/avatar-04.jpg", likes: 120 },
+    { id: 4, user: "lupita_rodriguez", text: "Yo pague $9,90 y me llegaron al correo al instante, estan super completos los recetarios.", time: "1d", avatar: "/avatars/avatar-04.jpg", likes: 120 },
     { id: 5, user: "ricky_cocina", text: "Lo que me ahorre en cenas esta semana no tiene nombre... gracias crack!", time: "2d", avatar: "/avatars/avatar-05.jpg", likes: 34 },
     { id: 6, user: "maria_chef", text: "Hice las papas del McDonalds y quedaron IDENTICAS. Mi familia no lo podia creer", time: "3h", avatar: "/avatars/avatar-06.jpg", likes: 567 },
-    { id: 7, user: "jorge_foodlover", text: "Por $10 USD tienes acceso a recetas que las franquicias cobran miles en capacitacion", time: "4h", avatar: "/avatars/avatar-07.jpg", likes: 234 },
+    { id: 7, user: "jorge_foodlover", text: "Por $9,90 USD tienes acceso a recetas que las franquicias cobran miles en capacitacion", time: "4h", avatar: "/avatars/avatar-07.jpg", likes: 234 },
     { id: 8, user: "ana_cocina", text: "El pollo estilo KFC me quedo mejor que el original, no es broma", time: "6h", avatar: "/avatars/avatar-08.jpg", likes: 445 },
     { id: 9, user: "pedro_gourmet", text: "Alguien sabe si incluye las salsas de Taco Bell? Esas son mi debilidad", time: "7h", avatar: "/avatars/avatar-09.jpg", likes: 89, replies: [{ user: "chef_secreto", text: "Si hermano, todas las salsas principales estan incluidas" }] },
     { id: 10, user: "laura_fit", text: "Ahora puedo hacer versiones mas saludables en casa sabiendo los ingredientes reales", time: "8h", avatar: "/avatars/avatar-10.jpg", likes: 156 },
@@ -37,7 +37,7 @@ export function FeedVideo() {
     { id: 14, user: "sofia_sweet", text: "Los postres de Starbucks me salieron perfectos, mis amigas no lo creian", time: "12h", avatar: "/avatars/avatar-14.jpg", likes: 267 },
     { id: 15, user: "manuel_pro", text: "Esto es oro puro para cualquiera que quiera emprender en comida", time: "13h", avatar: "/avatars/avatar-15.jpg", likes: 445 },
     { id: 16, user: "elena_foodie", text: "La salsa Big Mac es EXACTA. Probe mil recetas de internet y ninguna se acercaba", time: "14h", avatar: "/avatars/avatar-01.jpg", likes: 534 },
-    { id: 17, user: "andres_chef", text: "Como chef profesional digo: esto vale mucho mas de $10", time: "15h", avatar: "/avatars/avatar-02.jpg", likes: 678 },
+    { id: 17, user: "andres_chef", text: "Como chef profesional digo: esto vale mucho mas de $9,90", time: "15h", avatar: "/avatars/avatar-02.jpg", likes: 678 },
     { id: 18, user: "patricia_home", text: "Mis hijos ya no quieren ir a McDonalds porque les hago todo mejor en casa", time: "16h", avatar: "/avatars/avatar-03.jpg", likes: 389 },
     { id: 19, user: "fernando_grill", text: "El secreto del Whopper esta en el asado, y aqui lo explican perfecto", time: "17h", avatar: "/avatars/avatar-04.jpg", likes: 234 },
     { id: 20, user: "lucia_cooks", text: "Pense que era estafa pero llego todo al instante. Super recomendado", time: "18h", avatar: "/avatars/avatar-05.jpg", likes: 156 },
@@ -267,7 +267,7 @@ export function FeedVideo() {
             <span className="text-xs font-bold text-white leading-tight truncate">La Bóveda Secreta (14 PDFs)</span>
             <div className="flex items-center gap-2 mt-0.5">
                <span className="text-[10px] font-medium text-white/90">4.9 ★★★★★</span>
-               <span className="rounded bg-white px-1 py-0.5 text-[9px] font-bold text-[#FE2C55]">$10 USD</span>
+               <span className="rounded bg-white px-1 py-0.5 text-[9px] font-bold text-[#FE2C55]">$9,90 USD</span>
             </div>
           </div>
           <ChevronRight className="ml-auto h-5 w-5 text-white/80 shrink-0" />
