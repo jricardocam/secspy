@@ -85,13 +85,13 @@ export function Quiz() {
     setQuizState("preparing")
     setProgressPercent(0)
 
-    // Animar progreso de 0% a 30%
+    // Animar progreso de 0% a 30% más lento
     let progress = 0
     const preparingInterval = setInterval(() => {
-      progress += 2
+      progress += 1
       setProgressPercent(progress)
       if (progress >= 30) clearInterval(preparingInterval)
-    }, 30)
+    }, 50)
 
     // Después de 1.5s, iniciar revelación de comida
     setTimeout(() => {
