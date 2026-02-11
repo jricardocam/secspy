@@ -382,6 +382,7 @@ export function Quiz() {
         <div
           className="relative z-10 w-full max-w-[420px]"
           style={{
+            marginTop: "-8vh",
             opacity: contentVisible ? 1 : 0,
             transform: contentVisible ? "translateY(0)" : "translateY(10px)",
             transition: "opacity 0.3s ease, transform 0.3s ease",
