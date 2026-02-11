@@ -284,14 +284,14 @@ export function Quiz() {
 
             {/* Question */}
             <h2
-              className={`mb-2 text-4xl font-black leading-tight uppercase transition-all duration-300 ${fadeOut ? "opacity-0" : "opacity-100 animate-in fade-in slide-in-from-bottom-4"}`}
+              className={`mb-3 text-3xl font-black leading-snug uppercase transition-all duration-300 ${fadeOut ? "opacity-0" : "opacity-100 animate-in fade-in slide-in-from-bottom-4"}`}
               style={{ color: "var(--text-primary)", fontFamily: '"Bebas Neue", sans-serif' }}
             >
               {q.question}
             </h2>
 
             {/* Subtitle */}
-            <p className={`mb-6 text-sm leading-relaxed transition-all duration-300 ${fadeOut ? "opacity-0" : "opacity-100"}`} style={{ color: "var(--text-secondary)" }}>
+            <p className={`mb-5 text-sm leading-relaxed transition-all duration-300 ${fadeOut ? "opacity-0" : "opacity-100"}`} style={{ color: "var(--text-secondary)" }}>
               {q.subtitle}
             </p>
 
