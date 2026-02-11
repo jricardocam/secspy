@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 
@@ -26,38 +26,27 @@ const questions = [
     ],
   },
   {
-    category: "Tu Estilo",
-    question: "¿Qué tipo de comida te emociona más?",
-    subtitle: "Vamos a priorizar las recetas que más te interesan.",
+    category: "La Invitación",
+    question: "Estas recetas vienen de chefs que trabajaron en las cocinas de las cadenas más grandes.",
+    subtitle: "Son recetas reales, probadas y listas para replicar. ¿Estás listo?",
     options: [
-      { emoji: "🍔", text: "Hamburguesas y sándwiches", subtext: "Smash burgers, club sándwiches, brioche" },
-      { emoji: "🌮", text: "Street food y antojitos", subtext: "Tacos, empanadas, papas loaded, hot dogs" },
-      { emoji: "🍰", text: "Dulces y postres", subtext: "Churros, waffles, donas, postres callejeros" },
-      { emoji: "🔥", text: "Todo, quiero el pack completo", subtext: "No me hagan elegir" },
+      { emoji: "🔓", text: "Estoy listo, muéstrame todo", subtext: "" },
+      { emoji: "🚪", text: "Todavía no estoy listo", subtext: "" },
     ],
   },
 ]
 
-const foodItems = [
-  { image: "/food-burger.jpg", label: "SMASH BURGER SECRETA" },
-  { image: "/food-fries.jpg", label: "PAPAS LOADED PRO" },
-  { image: "/food-sauces.jpg", label: "SALSAS SIGNATURE" },
-]
-
-const FireParticle = ({ delay, duration, left }: { delay: number; duration: number; left: number }) => (
+const FireParticle = ({ delay, duration }: { delay: number; duration: number }) => (
   <div
-    className="absolute rounded-full"
+    className="absolute rounded-full bg-gradient-to-b from-amber-400 via-orange-500 to-transparent blur-md"
     style={{
-      width: Math.random() * 4 + 3 + "px",
-      height: Math.random() * 4 + 3 + "px",
-      left: left + "%",
-      bottom: "45%",
-      background: "radial-gradient(circle, #F59E0B, #EA580C, transparent)",
-      filter: "blur(1px)",
+      width: Math.random() * 5 + 3 + "px",
+      height: Math.random() * 5 + 3 + "px",
+      left: 50 + "%",
+      top: 50 + "%",
       animation: `floatUp ${duration}s ease-out infinite`,
       animationDelay: delay + "s",
-      opacity: 0,
-      pointerEvents: "none",
+      transformOrigin: "center",
     }}
   />
 )
@@ -67,257 +56,148 @@ export function Quiz() {
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [quizState, setQuizState] = useState<"intro" | "question" | "preparing" | "foodReveal" | "accessGranted">("intro")
   const [selectedAnswers, setSelectedAnswers] = useState<{ q: number; answer: string }[]>([])
-  const [selectedOption, setSelectedOption] = useState<string | null>(null)
-  const [contentVisible, setContentVisible] = useState(true)
+  const [fadeOut, setFadeOut] = useState(false)
   const [currentFoodIndex, setCurrentFoodIndex] = useState(0)
-  const [foodVisible, setFoodVisible] = useState(false)
   const [progressPercent, setProgressPercent] = useState(0)
 
-  // FIX 2: Proper transition between questions — fade out, wait, change, fade in
+  const foodItems = [
+    { image: "/food-burger.jpg", label: "SMASH BURGER SECRETA" },
+    { image: "/food-fries.jpg", label: "PAPAS LOADED PRO" },
+    { image: "/food-sauces.jpg", label: "SALSAS SIGNATURE" },
+  ]
+
   const handleSelectAnswer = (answer: string) => {
-    if (selectedOption !== null) return // Prevent double-tap
-    setSelectedOption(answer)
     setSelectedAnswers([...selectedAnswers, { q: currentQuestion, answer }])
+    setFadeOut(true)
 
-    // Step 1: Wait 500ms so user sees their selection highlighted
     setTimeout(() => {
-      // Step 2: Fade out current content
-      setContentVisible(false)
-
-      // Step 3: Wait for fade out to complete (300ms), THEN change question
-      setTimeout(() => {
-        if (currentQuestion < questions.length - 1) {
-          setCurrentQuestion(currentQuestion + 1)
-          setSelectedOption(null)
-          // Step 4: Small delay, then fade in new content
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              setContentVisible(true)
-            })
-          })
-        } else {
-          // Last question answered — start reveal
-          startRevealSequence()
-        }
-      }, 300)
-    }, 500)
+      if (currentQuestion < questions.length - 1) {
+        setCurrentQuestion(currentQuestion + 1)
+        setFadeOut(false)
+      } else {
+        startRevealSequence()
+      }
+    }, 300)
   }
 
-  // FIX 3: Slower, more dramatic reveal sequence (~7 seconds total)
-  const startRevealSequence = useCallback(() => {
-    // Phase 1: "Preparando tu selección..." (0s - 2.5s)
+  const startRevealSequence = () => {
+    // Fase 1: "Preparando tu selección..." (0s - 1.5s)
     setQuizState("preparing")
     setProgressPercent(0)
 
-    // Animate progress 0% → 25% over 2.5 seconds
+    // Animar progreso de 0% a 30% más lento
     let progress = 0
     const preparingInterval = setInterval(() => {
-      progress += 0.5
+      progress += 1
       setProgressPercent(progress)
-      if (progress >= 25) clearInterval(preparingInterval)
-    }, 50) // 0.5% every 50ms = 25% in 2.5s
+      if (progress >= 30) clearInterval(preparingInterval)
+    }, 80)
 
-    // After 2.5s, start food reveal
+    // Después de 1.5s, iniciar revelación de comida
     setTimeout(() => {
-      clearInterval(preparingInterval)
       setQuizState("foodReveal")
       setCurrentFoodIndex(0)
-      setFoodVisible(true)
-      setProgressPercent(25)
-
-      // Phase 2: Show 3 food images (2.5s - 6.5s) — ~1.3s per image
-      const showFood = (index: number) => {
-        setFoodVisible(false) // fade out previous
-
+      
+      // Mostrar cada imagen por 1s (0.6s aparición + 0.4s visible)
+      foodItems.forEach((_, index) => {
         setTimeout(() => {
           setCurrentFoodIndex(index)
-          setFoodVisible(true) // fade in new
-
-          // Update progress: 25% → 90% distributed across 3 images
-          const targetProgress = 25 + ((index + 1) / 3) * 65
-          let currentProgress = 25 + (index / 3) * 65
+          // Avanzar progreso de 30% a 90% distribuido en las 3 imágenes
+          const startProgress = 30 + (index / 3) * 60
+          const targetProgress = 30 + ((index + 1) / 3) * 60
+          
+          // Animar progreso suavemente
+          let currentProgress = startProgress
           const progressInterval = setInterval(() => {
-            currentProgress += 1
+            currentProgress += 2
             setProgressPercent(Math.min(currentProgress, targetProgress))
             if (currentProgress >= targetProgress) clearInterval(progressInterval)
-          }, 40)
-        }, 300) // 300ms gap between images for fade transition
-      }
+          }, 30)
+        }, index * 1000)
+      })
 
-      // Image 1 is already showing
-      // After 25% progress ramp
-      let p1 = 25
-      const p1Interval = setInterval(() => {
-        p1 += 1
-        setProgressPercent(Math.min(p1, 46))
-        if (p1 >= 46) clearInterval(p1Interval)
-      }, 40)
-
-      // Image 2 at 1.3s
+      // Después de mostrar las 3 imágenes (3s), ir a "Acceso Concedido"
       setTimeout(() => {
-        clearInterval(p1Interval)
-        showFood(1)
-      }, 1300)
-
-      // Image 3 at 2.6s
-      setTimeout(() => {
-        showFood(2)
-      }, 2600)
-
-      // Phase 3: Access granted at 4s (after 3 images shown)
-      setTimeout(() => {
-        setFoodVisible(false)
+        setQuizState("accessGranted")
+        setProgressPercent(100)
+        
+        // Después de 1.5s en "Acceso Concedido", redirigir
         setTimeout(() => {
-          setQuizState("accessGranted")
-          setProgressPercent(100)
+          router.push("/feed")
+        }, 1500)
+      }, 3000)
+    }, 1500)
+  }
 
-          // Phase 4: Redirect after 2s
-          setTimeout(() => {
-            router.push("/feed")
-          }, 2000)
-        }, 400)
-      }, 4000)
-    }, 2500)
-  }, [router])
+  const enterKitchen = () => {
+    router.push("/feed")
+  }
 
-  // Generate stable particles
-  const particles = Array.from({ length: 8 }, (_, i) => ({
-    delay: (i * 0.4) % 3,
-    duration: 2.2 + (i * 0.3) % 2,
-    left: 40 + (i * 3) % 20,
-  }))
+  const getSelectedAnswer = (qIndex: number) => {
+    return selectedAnswers.find((a) => a.q === qIndex)?.answer || ""
+  }
 
   // PANTALLA 1: INTRO
   if (quizState === "intro") {
     return (
-      <div
-        className="relative flex min-h-screen flex-col items-center justify-center px-5"
-        style={{ backgroundColor: "#0F0E0C" }}
-      >
-        {/* Background gradients */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: `
-              radial-gradient(ellipse at 50% 0%, rgba(245,158,11,0.04) 0%, transparent 60%),
-              radial-gradient(ellipse at 50% 100%, rgba(220,38,38,0.03) 0%, transparent 50%)
-            `,
-          }}
-        />
-
-        {/* Particles */}
-        <div className="absolute inset-0 pointer-events-none">
-          {particles.map((p, i) => (
-            <FireParticle key={i} {...p} />
+      <div className="relative flex min-h-screen flex-col items-center justify-center px-5" style={{ backgroundColor: "var(--background)" }}>
+        <div className="absolute inset-0 z-0">
+          {[...Array(8)].map((_, i) => (
+            <FireParticle key={i} delay={Math.random() * 2} duration={2 + Math.random() * 2} />
           ))}
         </div>
 
-        <div
-          className="relative z-10 w-full max-w-[420px]"
-          style={{ animation: "fadeSlideUp 0.7s ease-out forwards" }}
-        >
+        <div className="relative z-10 w-full max-w-[440px] animate-in fade-in slide-in-from-bottom-4 duration-700">
           {/* Flame Icon */}
-          <div className="mb-7 flex justify-center">
+          <div className="mb-6 flex justify-center">
             <div
-              className="relative flex h-[90px] w-[90px] items-center justify-center rounded-full"
+              className="relative flex h-20 w-20 items-center justify-center rounded-full animate-glow"
               style={{
-                background: "radial-gradient(circle, rgba(245,158,11,0.18) 0%, transparent 70%)",
-                animation: "glowPulse 3s ease-in-out infinite",
+                background: "radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 100%)",
               }}
             >
-              <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+              <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
                 <defs>
-                  <radialGradient id="flameCore" cx="50%" cy="60%" r="40%">
-                    <stop offset="0%" stopColor="#FBBF24" />
-                    <stop offset="100%" stopColor="#F59E0B" />
-                  </radialGradient>
-                  <radialGradient id="flameMid" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stopColor="#F59E0B" />
-                    <stop offset="100%" stopColor="#EA580C" />
-                  </radialGradient>
-                  <linearGradient id="flameOuter" x1="26" y1="6" x2="26" y2="46">
-                    <stop offset="0%" stopColor="#EA580C" />
-                    <stop offset="60%" stopColor="#DC2626" />
-                    <stop offset="100%" stopColor="#991B1B" />
+                  <linearGradient id="flameGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style={{ stopColor: "#FBBF24" }} />
+                    <stop offset="50%" style={{ stopColor: "#EA580C" }} />
+                    <stop offset="100%" style={{ stopColor: "#DC2626" }} />
                   </linearGradient>
                 </defs>
-                {/* Outer flame - irregular shape */}
                 <path
-                  d="M26 4C26 4 14 16 14 26C14 28 14.5 30 15.5 32C13.5 29 13 27 14 24C14 24 16 28 18 30C16 26 15 22 18 16C18 16 20 22 21 25C20 21 20 17 23 12C23 12 25 18 25.5 22C25.5 18 27 14 29 10C29 10 32 18 32 22C33 19 34 16 36 14C34 20 35 24 34 28C36 26 38 22 38 22C39 27 38 30 36.5 32C37.5 30 38 28 38 26C38 16 26 4 26 4Z"
-                  fill="url(#flameOuter)"
-                  style={{ animation: "flicker 1.5s ease-in-out infinite" }}
+                  d="M22 2C22 2 15 12 15 18C15 23.5 18.1 28 22 28C25.9 28 29 23.5 29 18C29 12 22 2 22 2Z"
+                  fill="url(#flameGradient)"
+                  opacity="0.9"
                 />
-                {/* Middle flame */}
-                <path
-                  d="M26 12C26 12 19 22 19 28C19 32 22 36 26 36C30 36 33 32 33 28C33 22 26 12 26 12Z"
-                  fill="url(#flameMid)"
-                  opacity="0.95"
-                />
-                {/* Inner core - brightest */}
-                <path
-                  d="M26 20C26 20 22 27 22 31C22 34 24 37 26 37C28 37 30 34 30 31C30 27 26 20 26 20Z"
-                  fill="url(#flameCore)"
-                />
-                {/* Hot center highlight */}
-                <ellipse cx="26" cy="32" rx="2.5" ry="3.5" fill="#FDE68A" opacity="0.6" />
               </svg>
             </div>
           </div>
 
           {/* Title */}
           <h1
-            className="mb-3 text-center uppercase"
-            style={{
-              color: "#FAF7F2",
-              fontFamily: '"Bebas Neue", sans-serif',
-              fontSize: "40px",
-              letterSpacing: "2px",
-            }}
+            className="mb-3 text-center text-5xl font-black tracking-widest uppercase"
+            style={{ color: "var(--text-primary)", fontFamily: '"Bebas Neue", sans-serif' }}
           >
             La Cocina Secreta
           </h1>
 
           {/* Subtitle */}
-          <p
-            className="mx-auto mb-8 text-center"
-            style={{
-              color: "#A8A29E",
-              fontSize: "15px",
-              lineHeight: 1.6,
-              maxWidth: "360px",
-              padding: "0 12px",
-            }}
-          >
+          <p className="mb-6 text-center text-sm leading-relaxed" style={{ color: "var(--text-secondary)", maxWidth: "380px", margin: "0 auto 24px" }}>
             Recetas exclusivas de chefs que trabajaron en las cadenas más grandes. Responde 3 preguntas para desbloquear tu acceso.
           </p>
 
           {/* Metrics */}
-          <div className="mb-9 flex justify-center gap-10">
+          <div className="mb-8 flex justify-center gap-8">
             {[
               { number: "400+", label: "Recetas" },
               { number: "14", label: "Guías" },
-              { number: "3.5K+", label: "Chefs" },
+              { number: "3.5k+", label: "Chefs" },
             ].map((metric, i) => (
               <div key={i} className="text-center">
-                <p
-                  style={{
-                    color: "#F59E0B",
-                    fontFamily: '"Bebas Neue", sans-serif',
-                    fontSize: "26px",
-                    lineHeight: 1,
-                  }}
-                >
+                <p className="mb-1 text-3xl font-black" style={{ color: "var(--accent-main)", fontFamily: '"Bebas Neue", sans-serif' }}>
                   {metric.number}
                 </p>
-                <p
-                  style={{
-                    color: "#57534E",
-                    fontSize: "11px",
-                    textTransform: "uppercase",
-                    letterSpacing: "1.5px",
-                    marginTop: "4px",
-                  }}
-                >
+                <p className="text-xs uppercase tracking-widest" style={{ color: "var(--text-tertiary)" }}>
                   {metric.label}
                 </p>
               </div>
@@ -326,337 +206,182 @@ export function Quiz() {
 
           {/* CTA Button */}
           <button
-            onClick={() => {
-              setContentVisible(true)
-              setQuizState("question")
-            }}
-            className="w-full transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
+            onClick={() => setQuizState("question")}
+            className="w-full rounded-xl py-5 px-8 text-xl font-black uppercase tracking-widest transition-all hover:-translate-y-0.5"
             style={{
-              background: "linear-gradient(135deg, #DC2626, #EA580C, #D97706)",
-              color: "#FFFFFF",
+              background: "linear-gradient(135deg, var(--cta-red) 0%, var(--orange) 50%, var(--accent-dark) 100%)",
+              color: "var(--text-primary)",
+              boxShadow: "0 4px 20px rgba(220, 38, 38, 0.4)",
               fontFamily: '"Bebas Neue", sans-serif',
-              fontSize: "18px",
-              letterSpacing: "2px",
-              padding: "18px",
-              borderRadius: "14px",
-              border: "none",
-              cursor: "pointer",
-              boxShadow: "0 4px 24px rgba(220, 38, 38, 0.35)",
             }}
           >
-            DESCUBRIR MI PERFIL DE CHEF
+            Descubrir Mi Perfil de Chef
           </button>
 
-          {/* Security text */}
-          <p className="mt-4 text-center" style={{ color: "#57534E", fontSize: "12px" }}>
+          {/* Security Text */}
+          <p className="mt-6 text-center text-xs" style={{ color: "var(--text-tertiary)" }}>
             🔒 Sin compromiso · Solo 30 segundos
           </p>
         </div>
-
-
       </div>
     )
   }
 
-  // PANTALLA 2: QUIZ — FIX 1: Proper vertical centering
+  // PANTALLA 2: QUIZ
   if (quizState === "question") {
     const q = questions[currentQuestion]
     const progress = ((currentQuestion + 1) / questions.length) * 100
 
     return (
-      <div
-        className="relative flex min-h-screen flex-col items-center justify-center px-5"
-        style={{ backgroundColor: "#0F0E0C" }}
-      >
-        {/* Background gradients */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: `
-              radial-gradient(ellipse at 50% 0%, rgba(245,158,11,0.04) 0%, transparent 60%),
-              radial-gradient(ellipse at 50% 100%, rgba(220,38,38,0.03) 0%, transparent 50%)
-            `,
-          }}
-        />
-
-        <div
-          className="relative z-10 w-full max-w-[420px]"
-          style={{
-            opacity: contentVisible ? 1 : 0,
-            transform: contentVisible ? "translateY(0)" : "translateY(10px)",
-            transition: "opacity 0.3s ease, transform 0.3s ease",
-          }}
-        >
-          {/* Progress Bar */}
-          <div className="mb-6">
-            <div className="mb-2.5 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span style={{ fontSize: "14px" }}>🔥</span>
-                <span
-                  style={{
-                    color: "#F59E0B",
-                    fontFamily: '"Bebas Neue", sans-serif',
-                    fontSize: "13px",
-                    letterSpacing: "2px",
-                  }}
-                >
-                  TU PERFIL DE CHEF
-                </span>
-              </div>
-              <span style={{ color: "#A8A29E", fontFamily: '"DM Sans", sans-serif', fontSize: "13px" }}>
-                {currentQuestion + 1}/3
+      <div className="relative flex min-h-screen flex-col px-5" style={{ backgroundColor: "var(--background)" }}>
+        {/* Progress Bar - Fixed at top */}
+        <div className="relative z-10 w-full max-w-[440px] mx-auto pt-8">
+          <div className="mb-3 flex items-center justify-between">
+            <div className="flex items-center gap-2" style={{ color: "var(--accent-main)" }}>
+              <span className="text-sm">🔥</span>
+              <span className="text-xs font-black uppercase tracking-widest" style={{ fontFamily: '"Bebas Neue", sans-serif' }}>
+                Tu Perfil de Chef
               </span>
             </div>
-            <div
-              style={{
-                width: "100%",
-                height: "4px",
-                backgroundColor: "#2A2520",
-                borderRadius: "4px",
-                overflow: "hidden",
-              }}
-            >
-              <div
-                style={{
-                  width: `${progress}%`,
-                  height: "100%",
-                  background: "linear-gradient(90deg, #D97706, #F59E0B, #FBBF24)",
-                  borderRadius: "4px",
-                  boxShadow: "0 0 10px rgba(245,158,11,0.4)",
-                  transition: "width 0.5s ease",
-                }}
-              />
-            </div>
-          </div>
-
-          {/* Category Badge */}
-          <div
-            className="mb-5 inline-flex items-center gap-1.5"
-            style={{
-              background: "rgba(245,158,11,0.12)",
-              border: "1px solid rgba(245,158,11,0.25)",
-              borderRadius: "20px",
-              padding: "6px 14px",
-            }}
-          >
-            <span style={{ fontSize: "12px" }}>🔥</span>
-            <span
-              style={{
-                color: "#F59E0B",
-                fontFamily: '"Bebas Neue", sans-serif',
-                fontSize: "12px",
-                letterSpacing: "2px",
-              }}
-            >
-              {q.category.toUpperCase()}
+            <span className="text-xs" style={{ color: "var(--text-secondary)" }}>
+              {currentQuestion + 1}/3
             </span>
           </div>
-
-          {/* Question */}
-          <h2
+          <div
+            className="h-1 rounded-full transition-all duration-600"
             style={{
-              color: "#FAF7F2",
-              fontFamily: '"Bebas Neue", sans-serif',
-              fontSize: "28px",
-              lineHeight: 1.2,
-              marginBottom: "8px",
+              background: "var(--border-inactive)",
+              boxShadow: `0 0 10px rgba(245, 158, 11, 0.3)`,
             }}
           >
-            {q.question}
-          </h2>
+            <div
+              className="h-full rounded-full transition-all duration-600"
+              style={{
+                width: `${progress}%`,
+                background: "linear-gradient(90deg, var(--accent-dark) 0%, var(--accent-main) 50%, var(--accent-light) 100%)",
+                boxShadow: "0 0 10px rgba(245, 158, 11, 0.5)",
+              }}
+            />
+          </div>
+        </div>
 
-          {/* Subtitle */}
-          <p
-            style={{
-              color: "#A8A29E",
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: "14px",
-              lineHeight: 1.5,
-              marginBottom: "24px",
-            }}
-          >
-            {q.subtitle}
-          </p>
+        {/* Centered Content */}
+        <div className="relative z-10 flex-1 flex items-start justify-center pt-6">
+          <div className="w-full max-w-[440px]">
+            {/* Category Badge */}
+            <div
+              className="mb-5 inline-block rounded-full px-4 py-1.5"
+              style={{
+                background: "rgba(245, 158, 11, 0.15)",
+                border: "1px solid rgba(245, 158, 11, 0.3)",
+              }}
+            >
+              <span className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest" style={{ color: "var(--accent-main)", fontFamily: '"Bebas Neue", sans-serif' }}>
+                <span>🔥</span>
+                {q.category}
+              </span>
+            </div>
 
-          {/* Options */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            {q.options.map((option, i) => {
-              const isSelected = selectedOption === option.text
-              return (
+            {/* Question */}
+            <h2
+              className={`mb-3 text-3xl font-black leading-snug uppercase transition-all duration-300 ${fadeOut ? "opacity-0" : "opacity-100 animate-in fade-in slide-in-from-bottom-4"}`}
+              style={{ color: "var(--text-primary)", fontFamily: '"Bebas Neue", sans-serif' }}
+            >
+              {q.question}
+            </h2>
+
+            {/* Subtitle */}
+            <p className={`mb-5 text-sm leading-relaxed transition-all duration-300 ${fadeOut ? "opacity-0" : "opacity-100"}`} style={{ color: "var(--text-secondary)" }}>
+              {q.subtitle}
+            </p>
+
+            {/* Options */}
+            <div className={`space-y-3 transition-all duration-300 ${fadeOut ? "opacity-0" : "opacity-100"}`}>
+              {q.options.map((option, i) => (
                 <button
-                  key={`${currentQuestion}-${i}`}
+                  key={i}
                   onClick={() => handleSelectAnswer(option.text)}
-                  disabled={selectedOption !== null}
+                  className="group w-full rounded-2xl border-2 p-5 text-left transition-all duration-200 hover:scale-105"
                   style={{
-                    width: "100%",
-                    textAlign: "left",
-                    padding: "16px 20px",
-                    borderRadius: "14px",
-                    border: isSelected ? "2px solid #F59E0B" : "1px solid #2A2520",
-                    background: isSelected
-                      ? "linear-gradient(135deg, rgba(245,158,11,0.08), rgba(234,88,12,0.05))"
-                      : "#1A1816",
-                    boxShadow: isSelected
-                      ? "0 0 20px rgba(245,158,11,0.15), inset 0 0 20px rgba(245,158,11,0.05)"
-                      : "none",
-                    cursor: selectedOption !== null ? "default" : "pointer",
-                    transition: "all 0.25s ease",
-                    animation: `optionSlideIn 0.35s ease-out ${i * 0.08}s both`,
-                    opacity: 0,
+                    background: "var(--card-bg)",
+                    borderColor: "var(--border-inactive)",
+                    animation: `slideUp 0.4s ease-out ${i * 0.1}s both`,
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-                    <span style={{ fontSize: "22px", flexShrink: 0 }}>{option.emoji}</span>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <p
-                        style={{
-                          color: isSelected ? "#F59E0B" : "#FAF7F2",
-                          fontFamily: '"DM Sans", sans-serif',
-                          fontSize: "15px",
-                          fontWeight: 600,
-                          transition: "color 0.25s ease",
-                          margin: 0,
-                        }}
-                      >
+                  <div className="flex items-center gap-4">
+                    <span className="text-2xl">{option.emoji}</span>
+                    <div className="flex-1">
+                      <p className="font-semibold" style={{ color: "var(--text-primary)" }}>
                         {option.text}
                       </p>
-                      {option.subtext && (
-                        <p
-                          style={{
-                            color: "#A8A29E",
-                            fontFamily: '"DM Sans", sans-serif',
-                            fontSize: "13px",
-                            marginTop: "2px",
-                            margin: "2px 0 0 0",
-                          }}
-                        >
-                          {option.subtext}
-                        </p>
-                      )}
+                      {option.subtext && <p className="text-xs" style={{ color: "var(--text-secondary)" }}>
+                        {option.subtext}
+                      </p>}
                     </div>
                     <div
+                      className="h-5 w-5 rounded-full border-2"
                       style={{
-                        width: "20px",
-                        height: "20px",
-                        borderRadius: "50%",
-                        border: isSelected ? "none" : "2px solid #2A2520",
-                        backgroundColor: isSelected ? "#F59E0B" : "transparent",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
-                        transition: "all 0.25s ease",
-                        animation: isSelected ? "scaleIn 0.3s ease" : "none",
+                        borderColor: "var(--border-inactive)",
+                        backgroundColor: "transparent",
                       }}
-                    >
-                      {isSelected && (
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                          <path d="M3 6L5.5 8.5L9 3.5" stroke="#0F0E0C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      )}
-                    </div>
+                    />
                   </div>
                 </button>
-              )
-            })}
+              ))}
+            </div>
           </div>
         </div>
       </div>
     )
   }
 
-  // PANTALLA 3: PREPARANDO — FIX 3: Much slower progression
+  // PANTALLA 3: PREPARANDO
   if (quizState === "preparing") {
     return (
-      <div
-        className="relative flex min-h-screen flex-col items-center justify-center px-5"
-        style={{ backgroundColor: "#0F0E0C" }}
-      >
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: `
-              radial-gradient(ellipse at 50% 0%, rgba(245,158,11,0.04) 0%, transparent 60%),
-              radial-gradient(ellipse at 50% 100%, rgba(220,38,38,0.03) 0%, transparent 50%)
-            `,
-          }}
-        />
-
-        <div className="absolute inset-0 pointer-events-none">
-          {particles.map((p, i) => (
-            <FireParticle key={i} {...p} />
+      <div className="relative flex min-h-screen flex-col items-center justify-center px-5" style={{ backgroundColor: "var(--background)" }}>
+        <div className="absolute inset-0 z-0">
+          {[...Array(8)].map((_, i) => (
+            <FireParticle key={i} delay={Math.random() * 2} duration={2.5 + Math.random() * 1.5} />
           ))}
         </div>
 
-        <div className="relative z-10 w-full max-w-[420px] text-center">
+        <div className="relative z-10 w-full max-w-[440px] text-center">
           {/* Flame */}
-          <div className="mb-10 flex justify-center">
+          <div className="mb-8 flex justify-center">
             <div
-              className="relative flex h-16 w-16 items-center justify-center rounded-full"
+              className="relative flex h-12 w-12 items-center justify-center rounded-full animate-flicker"
               style={{
-                background: "radial-gradient(circle, rgba(245,158,11,0.2) 0%, transparent 70%)",
-                animation: "glowPulse 2s ease-in-out infinite",
+                background: "radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 100%)",
               }}
             >
-              <svg width="36" height="36" viewBox="0 0 52 52" fill="none">
+              <svg width="30" height="30" viewBox="0 0 44 44" fill="none">
                 <defs>
-                  <radialGradient id="fc2" cx="50%" cy="60%" r="40%">
-                    <stop offset="0%" stopColor="#FBBF24" />
-                    <stop offset="100%" stopColor="#F59E0B" />
-                  </radialGradient>
-                  <radialGradient id="fm2" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stopColor="#F59E0B" />
-                    <stop offset="100%" stopColor="#EA580C" />
-                  </radialGradient>
-                  <linearGradient id="fo2" x1="26" y1="6" x2="26" y2="46">
-                    <stop offset="0%" stopColor="#EA580C" />
-                    <stop offset="60%" stopColor="#DC2626" />
-                    <stop offset="100%" stopColor="#991B1B" />
+                  <linearGradient id="flameGradient2" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style={{ stopColor: "#FBBF24" }} />
+                    <stop offset="50%" style={{ stopColor: "#EA580C" }} />
+                    <stop offset="100%" style={{ stopColor: "#DC2626" }} />
                   </linearGradient>
                 </defs>
                 <path
-                  d="M26 4C26 4 14 16 14 26C14 28 14.5 30 15.5 32C13.5 29 13 27 14 24C14 24 16 28 18 30C16 26 15 22 18 16C18 16 20 22 21 25C20 21 20 17 23 12C23 12 25 18 25.5 22C25.5 18 27 14 29 10C29 10 32 18 32 22C33 19 34 16 36 14C34 20 35 24 34 28C36 26 38 22 38 22C39 27 38 30 36.5 32C37.5 30 38 28 38 26C38 16 26 4 26 4Z"
-                  fill="url(#fo2)"
-                  style={{ animation: "flicker 1.5s ease-in-out infinite" }}
+                  d="M22 2C22 2 15 12 15 18C15 23.5 18.1 28 22 28C25.9 28 29 23.5 29 18C29 12 22 2 22 2Z"
+                  fill="url(#flameGradient2)"
                 />
-                <path d="M26 12C26 12 19 22 19 28C19 32 22 36 26 36C30 36 33 32 33 28C33 22 26 12 26 12Z" fill="url(#fm2)" opacity="0.95" />
-                <path d="M26 20C26 20 22 27 22 31C22 34 24 37 26 37C28 37 30 34 30 31C30 27 26 20 26 20Z" fill="url(#fc2)" />
-                <ellipse cx="26" cy="32" rx="2.5" ry="3.5" fill="#FDE68A" opacity="0.6" />
               </svg>
             </div>
           </div>
 
-          <p
-            style={{
-              color: "#A8A29E",
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: "16px",
-              marginBottom: "24px",
-              animation: "fadeContent 0.5s ease-out forwards",
-            }}
-          >
+          <p className="mb-4 text-base animate-fade-slide-up" style={{ color: "var(--text-secondary)" }}>
             Preparando tu selección...
           </p>
 
           {/* Progress Bar */}
-          <div
-            className="mx-auto"
-            style={{
-              width: "256px",
-              height: "3px",
-              backgroundColor: "#2A2520",
-              borderRadius: "3px",
-              overflow: "hidden",
-            }}
-          >
-            <div
+          <div className="mx-auto w-64 h-1 rounded-full" style={{ backgroundColor: "var(--border-inactive)" }}>
+            <div 
+              className="h-full rounded-full transition-all duration-300"
               style={{
                 width: `${progressPercent}%`,
-                height: "100%",
-                background: "linear-gradient(90deg, #D97706, #F59E0B, #FBBF24)",
-                borderRadius: "3px",
-                boxShadow: "0 0 10px rgba(245,158,11,0.5)",
-                transition: "width 0.15s linear",
+                background: "linear-gradient(90deg, var(--accent-dark) 0%, var(--accent-main) 50%, var(--accent-light) 100%)",
+                boxShadow: "0 0 10px rgba(245, 158, 11, 0.5)",
               }}
             />
           </div>
@@ -670,51 +395,27 @@ export function Quiz() {
     const currentFood = foodItems[currentFoodIndex]
 
     return (
-      <div
-        className="relative flex min-h-screen flex-col items-center justify-center px-5"
-        style={{ backgroundColor: "#0F0E0C" }}
-      >
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: `
-              radial-gradient(ellipse at 50% 0%, rgba(245,158,11,0.04) 0%, transparent 60%),
-              radial-gradient(ellipse at 50% 100%, rgba(220,38,38,0.03) 0%, transparent 50%)
-            `,
-          }}
-        />
+      <div className="relative flex min-h-screen flex-col items-center justify-center px-5" style={{ backgroundColor: "var(--background)" }}>
+        <div className="absolute inset-0 z-0">
+          {[...Array(10)].map((_, i) => (
+            <FireParticle key={i} delay={Math.random() * 2.5} duration={2 + Math.random() * 2} />
+          ))}
+        </div>
 
-        <div className="relative z-10 w-full max-w-[420px] text-center">
+        <div className="relative z-10 w-full max-w-[440px] text-center">
           {/* Food Image with Smoke Effect */}
-          <div className="relative mb-8" style={{ minHeight: "220px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            {/* Smoke/Steam behind */}
-            <div
-              className="absolute pointer-events-none"
+          <div className="relative mb-6">
+            {/* Smoke/Steam effect behind */}
+            <div 
+              className="absolute inset-0 animate-smoke-expand pointer-events-none"
               style={{
-                width: "280px",
-                height: "280px",
-                left: "50%",
-                top: "50%",
-                transform: "translate(-50%, -50%)",
-                background: "radial-gradient(circle, rgba(245,158,11,0.12) 0%, rgba(234,88,12,0.06) 40%, transparent 70%)",
+                background: "radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%)",
                 filter: "blur(20px)",
-                animation: foodVisible ? "smokeExpand 1.2s ease-out forwards" : "none",
               }}
             />
-
+            
             {/* Food Image */}
-            <div
-              className="relative overflow-hidden"
-              style={{
-                width: "200px",
-                height: "200px",
-                borderRadius: "16px",
-                opacity: foodVisible ? 1 : 0,
-                filter: foodVisible ? "blur(0)" : "blur(12px)",
-                transform: foodVisible ? "scale(1)" : "scale(0.85)",
-                transition: "opacity 0.5s ease, filter 0.6s ease, transform 0.5s ease",
-              }}
-            >
+            <div className="relative mx-auto w-52 h-52 rounded-2xl overflow-hidden animate-food-reveal">
               <Image
                 src={currentFood.image || "/placeholder.svg"}
                 alt={currentFood.label}
@@ -726,39 +427,25 @@ export function Quiz() {
           </div>
 
           {/* Label */}
-          <p
-            style={{
-              color: "#F59E0B",
+          <p 
+            className="text-sm font-black tracking-widest uppercase animate-fade-slide-up"
+            style={{ 
+              color: "var(--accent-main)", 
               fontFamily: '"Bebas Neue", sans-serif',
-              fontSize: "16px",
-              letterSpacing: "3px",
-              opacity: foodVisible ? 1 : 0,
-              transform: foodVisible ? "translateY(0)" : "translateY(8px)",
-              transition: "opacity 0.4s ease 0.2s, transform 0.4s ease 0.2s",
+              animationDelay: "0.4s"
             }}
           >
             {currentFood.label}
           </p>
 
           {/* Progress Bar */}
-          <div
-            className="mx-auto mt-10"
-            style={{
-              width: "256px",
-              height: "3px",
-              backgroundColor: "#2A2520",
-              borderRadius: "3px",
-              overflow: "hidden",
-            }}
-          >
-            <div
+          <div className="mx-auto mt-8 w-64 h-1 rounded-full" style={{ backgroundColor: "var(--border-inactive)" }}>
+            <div 
+              className="h-full rounded-full transition-all duration-300"
               style={{
                 width: `${progressPercent}%`,
-                height: "100%",
-                background: "linear-gradient(90deg, #D97706, #F59E0B, #FBBF24)",
-                borderRadius: "3px",
-                boxShadow: "0 0 10px rgba(245,158,11,0.5)",
-                transition: "width 0.15s linear",
+                background: "linear-gradient(90deg, var(--accent-dark) 0%, var(--accent-main) 50%, var(--accent-light) 100%)",
+                boxShadow: "0 0 10px rgba(245, 158, 11, 0.5)",
               }}
             />
           </div>
@@ -770,93 +457,55 @@ export function Quiz() {
   // PANTALLA 5: ACCESO CONCEDIDO
   if (quizState === "accessGranted") {
     return (
-      <div
-        className="relative flex min-h-screen flex-col items-center justify-center px-5"
-        style={{ backgroundColor: "#0F0E0C" }}
-      >
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: `radial-gradient(ellipse at 50% 50%, rgba(245,158,11,0.06) 0%, transparent 50%)`,
-          }}
-        />
+      <div className="relative flex min-h-screen flex-col items-center justify-center px-5" style={{ backgroundColor: "var(--background)" }}>
+        <div className="absolute inset-0 z-0">
+          {[...Array(15)].map((_, i) => (
+            <FireParticle key={i} delay={Math.random() * 2} duration={2 + Math.random() * 2} />
+          ))}
+        </div>
 
-        <div className="relative z-10 w-full max-w-[420px] text-center">
+        <div className="relative z-10 w-full max-w-[440px] text-center">
           {/* Badge */}
           <div
-            className="mb-5 inline-flex items-center gap-1.5"
+            className="mb-6 inline-block rounded-full px-4 py-2 animate-burn-in"
             style={{
-              background: "rgba(245,158,11,0.15)",
-              border: "1px solid rgba(245,158,11,0.35)",
-              borderRadius: "20px",
-              padding: "8px 18px",
-              animation: "burnIn 0.8s ease forwards",
+              background: "rgba(245, 158, 11, 0.15)",
+              border: "1px solid rgba(245, 158, 11, 0.35)",
             }}
           >
-            <span style={{ color: "#F59E0B", fontSize: "12px" }}>✦</span>
-            <span
-              style={{
-                color: "#F59E0B",
-                fontFamily: '"Bebas Neue", sans-serif',
-                fontSize: "13px",
-                letterSpacing: "3px",
-              }}
-            >
-              ACCESO CONCEDIDO
+            <span className="text-xs font-black uppercase tracking-widest" style={{ color: "var(--accent-main)", fontFamily: '"Bebas Neue", sans-serif', letterSpacing: "3px" }}>
+              ✦ ACCESO CONCEDIDO ✦
             </span>
-            <span style={{ color: "#F59E0B", fontSize: "12px" }}>✦</span>
           </div>
 
           {/* Title */}
           <h2
-            style={{
-              color: "#FAF7F2",
+            className="mb-3 text-3xl font-black uppercase leading-tight animate-burn-in"
+            style={{ 
+              color: "var(--text-primary)", 
               fontFamily: '"Bebas Neue", sans-serif',
-              fontSize: "32px",
-              lineHeight: 1.15,
-              marginBottom: "12px",
-              animation: "burnIn 0.8s ease forwards",
-              animationDelay: "0.2s",
-              opacity: 0,
+              animationDelay: "0.2s"
             }}
           >
-            Tu Cocina Secreta
-            <br />
-            Está Lista
+            Tu cocina secreta está lista
           </h2>
 
           {/* Subtitle */}
           <p
-            style={{
-              color: "#A8A29E",
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: "14px",
-              animation: "burnIn 0.8s ease forwards",
-              animationDelay: "0.4s",
-              opacity: 0,
-            }}
+            className="mb-8 text-sm animate-burn-in"
+            style={{ color: "var(--text-secondary)", animationDelay: "0.4s" }}
           >
             Redirigiendo...
           </p>
 
-          {/* Progress at 100% with strong glow */}
-          <div
-            className="mx-auto mt-10"
-            style={{
-              width: "256px",
-              height: "3px",
-              backgroundColor: "#2A2520",
-              borderRadius: "3px",
-              overflow: "hidden",
-            }}
-          >
-            <div
+          {/* Progress Bar at 100% with glow */}
+          <div className="mx-auto w-64 h-1 rounded-full" style={{ backgroundColor: "var(--border-inactive)" }}>
+            <div 
+              className="h-full rounded-full"
               style={{
                 width: "100%",
-                height: "100%",
-                background: "linear-gradient(90deg, #D97706, #F59E0B, #FBBF24)",
-                borderRadius: "3px",
-                boxShadow: "0 0 20px rgba(245,158,11,0.7), 0 0 40px rgba(245,158,11,0.3)",
+                background: "linear-gradient(90deg, var(--accent-dark) 0%, var(--accent-main) 50%, var(--accent-light) 100%)",
+                boxShadow: "0 0 20px rgba(245, 158, 11, 0.8), 0 0 40px rgba(245, 158, 11, 0.4)",
               }}
             />
           </div>
@@ -866,65 +515,4 @@ export function Quiz() {
   }
 
   return null
-}
-
-// Wrap the Quiz in a layout that always has the global styles mounted
-export default function QuizPage() {
-  return (
-    <>
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap');
-
-        @keyframes fadeSlideUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeContent {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes floatUp {
-          0% { opacity: 0; transform: translateY(0) scale(1); }
-          15% { opacity: 0.6; }
-          100% { opacity: 0; transform: translateY(-100px) scale(0.2); }
-        }
-        @keyframes glowPulse {
-          0%, 100% { box-shadow: 0 0 15px rgba(245,158,11,0.2); }
-          50% { box-shadow: 0 0 30px rgba(245,158,11,0.4), 0 0 50px rgba(234,88,12,0.15); }
-        }
-        @keyframes flicker {
-          0%, 100% { opacity: 1; transform: scaleX(1); }
-          25% { opacity: 0.92; transform: scaleX(0.98); }
-          75% { opacity: 0.95; transform: scaleX(1.02); }
-        }
-        @keyframes scaleIn {
-          from { opacity: 0; transform: scale(0.7); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        @keyframes foodReveal {
-          0% { opacity: 0; filter: blur(12px); transform: scale(0.85); }
-          60% { opacity: 1; filter: blur(3px); transform: scale(1.02); }
-          100% { opacity: 1; filter: blur(0); transform: scale(1); }
-        }
-        @keyframes smokeExpand {
-          0% { opacity: 0.4; transform: scale(0.8); }
-          100% { opacity: 0; transform: scale(1.8); }
-        }
-        @keyframes burnIn {
-          0% { opacity: 0; filter: blur(6px) brightness(1.8); }
-          50% { opacity: 0.8; filter: blur(2px) brightness(1.3); }
-          100% { opacity: 1; filter: blur(0) brightness(1); }
-        }
-        @keyframes optionSlideIn {
-          from { opacity: 0; transform: translateY(12px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes btnGlow {
-          0%, 100% { box-shadow: 0 4px 24px rgba(220,38,38,0.3); }
-          50% { box-shadow: 0 4px 32px rgba(220,38,38,0.5), 0 0 15px rgba(245,158,11,0.2); }
-        }
-      `}</style>
-      <Quiz />
-    </>
-  )
 }
