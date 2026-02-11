@@ -185,21 +185,37 @@ export function FeedVideo() {
         />
       </div>
 
-      {/* Sound button - top right */}
+      {/* Sound button - centered on screen */}
       <button
         onClick={handleMute}
-        className="absolute top-4 right-4 flex items-center justify-center rounded-full animate-sound-pulse"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center rounded-full animate-sound-pulse"
         style={{
-          width: "40px",
-          height: "40px",
-          background: "rgba(0, 0, 0, 0.5)",
+          width: "72px",
+          height: "72px",
+          background: "rgba(234, 88, 12, 0.2)",
+          border: "2px solid rgba(245, 158, 11, 0.5)",
           backdropFilter: "blur(8px)",
           WebkitBackdropFilter: "blur(8px)",
           zIndex: 30,
+          transition: "opacity 0.3s ease",
+          opacity: showCard ? 0 : 1,
+          pointerEvents: showCard ? "none" : "auto",
         }}
         aria-label={muted ? "Activar sonido" : "Silenciar"}
       >
-        <span className="text-lg">{muted ? "\uD83D\uDD07" : "\uD83D\uDD0A"}</span>
+        {muted ? (
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+            <line x1="23" y1="9" x2="17" y2="15" />
+            <line x1="17" y1="9" x2="23" y2="15" />
+          </svg>
+        ) : (
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+          </svg>
+        )}
       </button>
 
       {/* ELEMENT 2: Floating product card */}
