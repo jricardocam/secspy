@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { Check, ChevronDown, ChevronUp, Shield, Flame, Star, Users, Zap, ChefHat, Heart, DollarSign, Gift } from "lucide-react"
+import { useState, useRef } from "react"
+import { Check, ChevronDown, ChevronUp, Shield, Flame, Star, Users, Zap, ChefHat, Heart, DollarSign, Gift, Play } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 
@@ -62,9 +62,24 @@ const faqs = [
 export function SalesPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [showAllBonus, setShowAllBonus] = useState(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [videoStarted, setVideoStarted] = useState(false)
 
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index)
+  }
+
+  const startVideo = async () => {
+    const video = videoRef.current
+    if (!video || videoStarted) return
+    try {
+      video.muted = false
+      video.volume = 1
+      await video.play()
+      setVideoStarted(true)
+    } catch (e) {
+      console.log("Play failed:", e)
+    }
   }
 
   const visibleBonus = showAllBonus ? archivosBonus : archivosBonus.slice(0, 4)
@@ -464,6 +479,55 @@ export function SalesPage() {
           <p style={{ fontFamily: '"DM Sans", sans-serif', fontSize: "12px", color: "#57534E" }}>
             🔒 Tu compra está protegida · Pago seguro vía Shopify
           </p>
+        </div>
+      </section>
+
+      {/* ============================================ */}
+      {/* VIDEO                                        */}
+      {/* ============================================ */}
+      <section className="px-5 py-10" style={{ borderTop: "1px solid #2A2520", background: "#1A1816" }}>
+        <div className="mx-auto max-w-md">
+          <h2
+            className="mb-2 text-center"
+            style={{ fontFamily: '"Bebas Neue", sans-serif', fontSize: "24px", color: "#FAF7F2", letterSpacing: "1px" }}
+          >
+            Mira Lo Que Vas a Aprender
+          </h2>
+          <p
+            className="mb-5 text-center"
+            style={{ fontFamily: '"DM Sans", sans-serif', fontSize: "13px", color: "#A8A29E" }}
+          >
+            Un vistazo a lo que incluye La Cocina Secreta
+          </p>
+          <div className="relative aspect-[9/16] w-full overflow-hidden rounded-xl" style={{ border: "1px solid #2A2520", backgroundColor: "#0F0E0C" }}>
+            <video
+              ref={videoRef}
+              className="h-full w-full object-cover"
+              playsInline
+              preload="auto"
+              loop
+              src="https://recursoexperto.com/wp-content/uploads/2026/01/Video3.mp4"
+            />
+
+            {!videoStarted && (
+              <button
+                onClick={startVideo}
+                className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/40 transition-all hover:bg-black/50"
+                aria-label="Play"
+              >
+                <div
+                  className="flex h-16 w-16 items-center justify-center rounded-full border-2 transition-transform hover:scale-110"
+                  style={{
+                    borderColor: "#F59E0B",
+                    backgroundColor: "rgba(0,0,0,0.5)",
+                    boxShadow: "0 0 20px rgba(245, 158, 11, 0.4)",
+                  }}
+                >
+                  <Play className="ml-1 h-8 w-8" style={{ color: "#F59E0B" }} />
+                </div>
+              </button>
+            )}
+          </div>
         </div>
       </section>
 
