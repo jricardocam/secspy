@@ -103,8 +103,11 @@ export function Quiz() {
         setTimeout(() => {
           setCurrentFoodIndex(index)
           // Avanzar progreso de 30% a 90% distribuido en las 3 imágenes
+          const startProgress = 30 + (index / 3) * 60
           const targetProgress = 30 + ((index + 1) / 3) * 60
-          let currentProgress = progressPercent
+          
+          // Animar progreso suavemente
+          let currentProgress = startProgress
           const progressInterval = setInterval(() => {
             currentProgress += 2
             setProgressPercent(Math.min(currentProgress, targetProgress))
@@ -230,7 +233,7 @@ export function Quiz() {
     const progress = ((currentQuestion + 1) / questions.length) * 100
 
     return (
-      <div className="relative flex min-h-screen flex-col items-center justify-center px-5 py-8" style={{ backgroundColor: "var(--background)" }}>
+      <div className="relative flex min-h-screen flex-col items-center justify-center px-5" style={{ backgroundColor: "var(--background)" }}>
         <div className="relative z-10 w-full max-w-[440px]">
           {/* Progress Bar */}
           <div className="mb-8">
