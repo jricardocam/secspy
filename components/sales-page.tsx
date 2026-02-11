@@ -167,7 +167,7 @@ export function SalesPage() {
           </div>
 
           {/* CTA Button */}
-          <a href={CHECKOUT_URL} target="_blank" rel="noopener noreferrer" className="block">
+          <a href={CHECKOUT_URL} rel="noopener noreferrer" className="block">
             <button
               className="w-full transition-all duration-200 active:scale-[0.98]"
               style={{
@@ -607,7 +607,7 @@ export function SalesPage() {
             </p>
           </div>
 
-          <a href={CHECKOUT_URL} target="_blank" rel="noopener noreferrer" className="block">
+          <a href={CHECKOUT_URL} rel="noopener noreferrer" className="block">
             <button
               className="w-full transition-all duration-200 active:scale-[0.98]"
               style={{
@@ -658,7 +658,7 @@ export function SalesPage() {
         }}
       >
         <div className="mx-auto max-w-md">
-          <a href={CHECKOUT_URL} target="_blank" rel="noopener noreferrer" className="block">
+          <a href={CHECKOUT_URL} rel="noopener noreferrer" className="block">
             <button
               className="w-full flex items-center justify-center gap-3 transition-all duration-200 active:scale-[0.98]"
               style={{
