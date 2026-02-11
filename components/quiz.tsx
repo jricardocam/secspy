@@ -149,7 +149,7 @@ export function Quiz() {
 
         <div className="relative z-10 w-full max-w-[440px] animate-in fade-in slide-in-from-bottom-4 duration-700">
           {/* Flame Icon */}
-          <div className="mb-8 flex justify-center">
+          <div className="mb-6 flex justify-center">
             <div
               className="relative flex h-20 w-20 items-center justify-center rounded-full animate-glow"
               style={{
@@ -175,19 +175,19 @@ export function Quiz() {
 
           {/* Title */}
           <h1
-            className="mb-4 text-center text-5xl font-black tracking-widest uppercase"
+            className="mb-3 text-center text-5xl font-black tracking-widest uppercase"
             style={{ color: "var(--text-primary)", fontFamily: '"Bebas Neue", sans-serif' }}
           >
             La Cocina Secreta
           </h1>
 
           {/* Subtitle */}
-          <p className="mb-8 text-center text-sm leading-relaxed" style={{ color: "var(--text-secondary)", maxWidth: "380px", margin: "0 auto 32px" }}>
+          <p className="mb-6 text-center text-sm leading-relaxed" style={{ color: "var(--text-secondary)", maxWidth: "380px", margin: "0 auto 24px" }}>
             Recetas exclusivas de chefs que trabajaron en las cadenas más grandes. Responde 3 preguntas para desbloquear tu acceso.
           </p>
 
           {/* Metrics */}
-          <div className="mb-12 flex justify-center gap-8">
+          <div className="mb-8 flex justify-center gap-8">
             {[
               { number: "400+", label: "Recetas" },
               { number: "14", label: "Guías" },
@@ -266,11 +266,11 @@ export function Quiz() {
         </div>
 
         {/* Centered Content */}
-        <div className="relative z-10 flex-1 flex items-center justify-center">
+        <div className="relative z-10 flex-1 flex items-center justify-center py-8">
           <div className="w-full max-w-[440px]">
             {/* Category Badge */}
             <div
-              className="mb-8 inline-block rounded-full px-4 py-1.5"
+              className="mb-5 inline-block rounded-full px-4 py-1.5"
               style={{
                 background: "rgba(245, 158, 11, 0.15)",
                 border: "1px solid rgba(245, 158, 11, 0.3)",
@@ -291,7 +291,7 @@ export function Quiz() {
             </h2>
 
             {/* Subtitle */}
-            <p className={`mb-8 text-sm leading-relaxed transition-all duration-300 ${fadeOut ? "opacity-0" : "opacity-100"}`} style={{ color: "var(--text-secondary)" }}>
+            <p className={`mb-6 text-sm leading-relaxed transition-all duration-300 ${fadeOut ? "opacity-0" : "opacity-100"}`} style={{ color: "var(--text-secondary)" }}>
               {q.subtitle}
             </p>
 
