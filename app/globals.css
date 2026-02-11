@@ -295,6 +295,46 @@
   }
 }
 
+@keyframes foodReveal {
+  0% {
+    opacity: 0;
+    filter: blur(12px);
+    transform: scale(0.85);
+  }
+  60% {
+    opacity: 1;
+    filter: blur(3px);
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
+}
+
+@keyframes smokeExpand {
+  0% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .animate-float-up {
   animation: floatUp 2s ease-out infinite;
 }
@@ -325,4 +365,16 @@
 
 .animate-glow-pulse {
   animation: glowPulse 3s ease-in-out infinite;
+}
+
+.animate-food-reveal {
+  animation: foodReveal 0.8s ease-out forwards;
+}
+
+.animate-smoke-expand {
+  animation: smokeExpand 2s ease-out forwards;
+}
+
+.animate-fade-slide-up {
+  animation: fadeSlideUp 0.5s ease-out forwards;
 }

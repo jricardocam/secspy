@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 const questions = [
   {
@@ -53,16 +54,16 @@ const FireParticle = ({ delay, duration }: { delay: number; duration: number }) 
 export function Quiz() {
   const router = useRouter()
   const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [quizState, setQuizState] = useState<"intro" | "question" | "loading" | "granted">("intro")
+  const [quizState, setQuizState] = useState<"intro" | "question" | "preparing" | "foodReveal" | "accessGranted">("intro")
   const [selectedAnswers, setSelectedAnswers] = useState<{ q: number; answer: string }[]>([])
-  const [loadingLines, setLoadingLines] = useState<{ text: string; done: boolean }[]>([])
   const [fadeOut, setFadeOut] = useState(false)
+  const [currentFoodIndex, setCurrentFoodIndex] = useState(0)
+  const [progressPercent, setProgressPercent] = useState(0)
 
-  const loadingMessages = [
-    "Analizando tu perfil de chef...",
-    "Seleccionando recetas para tu nivel...",
-    "Preparando tu acceso exclusivo...",
-    "Tu cocina secreta está lista ✓",
+  const foodItems = [
+    { image: "/food-burger.jpg", label: "SMASH BURGER SECRETA" },
+    { image: "/food-fries.jpg", label: "PAPAS LOADED PRO" },
+    { image: "/food-sauces.jpg", label: "SALSAS SIGNATURE" },
   ]
 
   const handleSelectAnswer = (answer: string) => {
@@ -74,31 +75,55 @@ export function Quiz() {
         setCurrentQuestion(currentQuestion + 1)
         setFadeOut(false)
       } else {
-        startLoading()
+        startRevealSequence()
       }
     }, 300)
   }
 
-  const startLoading = () => {
-    setQuizState("loading")
-    setLoadingLines(loadingMessages.map((msg, i) => ({ text: msg, done: false })))
+  const startRevealSequence = () => {
+    // Fase 1: "Preparando tu selección..." (0s - 1.5s)
+    setQuizState("preparing")
+    setProgressPercent(0)
 
-    loadingMessages.forEach((msg, index) => {
-      const isFinal = index === loadingMessages.length - 1
-      const delay = index * 1400 + (isFinal ? 0 : 0)
+    // Animar progreso de 0% a 30%
+    let progress = 0
+    const preparingInterval = setInterval(() => {
+      progress += 2
+      setProgressPercent(progress)
+      if (progress >= 30) clearInterval(preparingInterval)
+    }, 30)
 
-      setTimeout(() => {
-        setLoadingLines((prev) =>
-          prev.map((line, i) =>
-            i === index ? { ...line, done: true } : line
-          )
-        )
-      }, delay + (isFinal ? 1200 : 1400))
-    })
-
+    // Después de 1.5s, iniciar revelación de comida
     setTimeout(() => {
-      setQuizState("granted")
-    }, loadingMessages.length * 1400 + 800)
+      setQuizState("foodReveal")
+      setCurrentFoodIndex(0)
+      
+      // Mostrar cada imagen por 1s (0.6s aparición + 0.4s visible)
+      foodItems.forEach((_, index) => {
+        setTimeout(() => {
+          setCurrentFoodIndex(index)
+          // Avanzar progreso de 30% a 90% distribuido en las 3 imágenes
+          const targetProgress = 30 + ((index + 1) / 3) * 60
+          let currentProgress = progressPercent
+          const progressInterval = setInterval(() => {
+            currentProgress += 2
+            setProgressPercent(Math.min(currentProgress, targetProgress))
+            if (currentProgress >= targetProgress) clearInterval(progressInterval)
+          }, 30)
+        }, index * 1000)
+      })
+
+      // Después de mostrar las 3 imágenes (3s), ir a "Acceso Concedido"
+      setTimeout(() => {
+        setQuizState("accessGranted")
+        setProgressPercent(100)
+        
+        // Después de 1.5s en "Acceso Concedido", redirigir
+        setTimeout(() => {
+          router.push("/feed")
+        }, 1500)
+      }, 3000)
+    }, 1500)
   }
 
   const enterKitchen = () => {
@@ -304,26 +329,26 @@ export function Quiz() {
     )
   }
 
-  // PANTALLA 3: LOADING
-  if (quizState === "loading") {
+  // PANTALLA 3: PREPARANDO
+  if (quizState === "preparing") {
     return (
       <div className="relative flex min-h-screen flex-col items-center justify-center px-5" style={{ backgroundColor: "var(--background)" }}>
         <div className="absolute inset-0 z-0">
-          {[...Array(12)].map((_, i) => (
-            <FireParticle key={i} delay={Math.random() * 3} duration={2.5 + Math.random() * 1.5} />
+          {[...Array(8)].map((_, i) => (
+            <FireParticle key={i} delay={Math.random() * 2} duration={2.5 + Math.random() * 1.5} />
           ))}
         </div>
 
         <div className="relative z-10 w-full max-w-[440px] text-center">
           {/* Flame */}
-          <div className="mb-12 flex justify-center">
+          <div className="mb-8 flex justify-center">
             <div
-              className="relative flex h-16 w-16 items-center justify-center rounded-full animate-flicker"
+              className="relative flex h-12 w-12 items-center justify-center rounded-full animate-flicker"
               style={{
-                background: "radial-gradient(circle, rgba(245, 158, 11, 0.2) 0%, transparent 100%)",
+                background: "radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 100%)",
               }}
             >
-              <svg width="36" height="36" viewBox="0 0 44 44" fill="none">
+              <svg width="30" height="30" viewBox="0 0 44 44" fill="none">
                 <defs>
                   <linearGradient id="flameGradient2" x1="0%" y1="0%" x2="0%" y2="100%">
                     <stop offset="0%" style={{ stopColor: "#FBBF24" }} />
@@ -339,135 +364,145 @@ export function Quiz() {
             </div>
           </div>
 
-          {/* Loading Lines */}
-          <div className="space-y-4 text-left">
-            {loadingLines.map((line, i) => (
-              <div key={i} className="flex items-start gap-3">
-                <span
-                  className={`mt-1 h-2 w-2 flex-shrink-0 rounded-full ${line.done ? "" : "animate-pulse"}`}
-                  style={{ backgroundColor: "var(--accent-main)" }}
-                />
-                <p
-                  className={`animate-type-line text-sm font-medium transition-all ${line.done ? "opacity-50" : ""}`}
-                  style={{ color: line.done ? "var(--text-tertiary)" : "var(--text-primary)" }}
-                >
-                  {line.text}
-                  {!line.done && <span className="ml-1 inline-block animate-pulse">...</span>}
-                </p>
-              </div>
-            ))}
+          <p className="mb-4 text-base animate-fade-slide-up" style={{ color: "var(--text-secondary)" }}>
+            Preparando tu selección...
+          </p>
+
+          {/* Progress Bar */}
+          <div className="mx-auto w-64 h-1 rounded-full" style={{ backgroundColor: "var(--border-inactive)" }}>
+            <div 
+              className="h-full rounded-full transition-all duration-300"
+              style={{
+                width: `${progressPercent}%`,
+                background: "linear-gradient(90deg, var(--accent-dark) 0%, var(--accent-main) 50%, var(--accent-light) 100%)",
+                boxShadow: "0 0 10px rgba(245, 158, 11, 0.5)",
+              }}
+            />
           </div>
         </div>
       </div>
     )
   }
 
-  // PANTALLA 4: ACCESO CONCEDIDO
-  if (quizState === "granted") {
-    const motivationAnswer = getSelectedAnswer(0)
-    const levelAnswer = getSelectedAnswer(1)
+  // PANTALLA 4: REVELACIÓN DE COMIDA
+  if (quizState === "foodReveal") {
+    const currentFood = foodItems[currentFoodIndex]
 
     return (
-      <div className="relative flex min-h-screen flex-col items-center justify-center px-5 py-8" style={{ backgroundColor: "var(--background)" }}>
+      <div className="relative flex min-h-screen flex-col items-center justify-center px-5" style={{ backgroundColor: "var(--background)" }}>
         <div className="absolute inset-0 z-0">
-          {[...Array(15)].map((_, i) => (
-            <FireParticle key={i} delay={Math.random() * 2.5} duration={2 + Math.random() * 2.5} />
+          {[...Array(10)].map((_, i) => (
+            <FireParticle key={i} delay={Math.random() * 2.5} duration={2 + Math.random() * 2} />
           ))}
         </div>
 
         <div className="relative z-10 w-full max-w-[440px] text-center">
-          {/* Flame */}
-          <div className="mb-10 flex justify-center animate-in scale-in duration-600">
-            <div
-              className="relative flex h-24 w-24 items-center justify-center rounded-full animate-glow"
+          {/* Food Image with Smoke Effect */}
+          <div className="relative mb-6">
+            {/* Smoke/Steam effect behind */}
+            <div 
+              className="absolute inset-0 animate-smoke-expand pointer-events-none"
               style={{
-                background: "radial-gradient(circle, rgba(245, 158, 11, 0.2) 0%, transparent 100%)",
+                background: "radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%)",
+                filter: "blur(20px)",
               }}
-            >
-              <svg width="56" height="56" viewBox="0 0 44 44" fill="none">
-                <defs>
-                  <linearGradient id="flameGradient3" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" style={{ stopColor: "#FBBF24" }} />
-                    <stop offset="50%" style={{ stopColor: "#EA580C" }} />
-                    <stop offset="100%" style={{ stopColor: "#DC2626" }} />
-                  </linearGradient>
-                </defs>
-                <path
-                  d="M22 2C22 2 15 12 15 18C15 23.5 18.1 28 22 28C25.9 28 29 23.5 29 18C29 12 22 2 22 2Z"
-                  fill="url(#flameGradient3)"
-                  opacity="0.95"
-                />
-              </svg>
+            />
+            
+            {/* Food Image */}
+            <div className="relative mx-auto w-52 h-52 rounded-2xl overflow-hidden animate-food-reveal">
+              <Image
+                src={currentFood.image || "/placeholder.svg"}
+                alt={currentFood.label}
+                fill
+                className="object-cover"
+                priority
+              />
             </div>
           </div>
 
+          {/* Label */}
+          <p 
+            className="text-sm font-black tracking-widest uppercase animate-fade-slide-up"
+            style={{ 
+              color: "var(--accent-main)", 
+              fontFamily: '"Bebas Neue", sans-serif',
+              animationDelay: "0.4s"
+            }}
+          >
+            {currentFood.label}
+          </p>
+
+          {/* Progress Bar */}
+          <div className="mx-auto mt-8 w-64 h-1 rounded-full" style={{ backgroundColor: "var(--border-inactive)" }}>
+            <div 
+              className="h-full rounded-full transition-all duration-300"
+              style={{
+                width: `${progressPercent}%`,
+                background: "linear-gradient(90deg, var(--accent-dark) 0%, var(--accent-main) 50%, var(--accent-light) 100%)",
+                boxShadow: "0 0 10px rgba(245, 158, 11, 0.5)",
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // PANTALLA 5: ACCESO CONCEDIDO
+  if (quizState === "accessGranted") {
+    return (
+      <div className="relative flex min-h-screen flex-col items-center justify-center px-5" style={{ backgroundColor: "var(--background)" }}>
+        <div className="absolute inset-0 z-0">
+          {[...Array(15)].map((_, i) => (
+            <FireParticle key={i} delay={Math.random() * 2} duration={2 + Math.random() * 2} />
+          ))}
+        </div>
+
+        <div className="relative z-10 w-full max-w-[440px] text-center">
           {/* Badge */}
           <div
             className="mb-6 inline-block rounded-full px-4 py-2 animate-burn-in"
             style={{
-              background: "rgba(245, 158, 11, 0.18)",
-              border: "1px solid rgba(245, 158, 11, 0.4)",
-              animationDelay: "0.2s",
+              background: "rgba(245, 158, 11, 0.15)",
+              border: "1px solid rgba(245, 158, 11, 0.35)",
             }}
           >
-            <span className="text-xs font-black uppercase tracking-widest" style={{ color: "var(--accent-main)" }}>
-              ✦ Acceso Concedido ✦
+            <span className="text-xs font-black uppercase tracking-widest" style={{ color: "var(--accent-main)", fontFamily: '"Bebas Neue", sans-serif', letterSpacing: "3px" }}>
+              ✦ ACCESO CONCEDIDO ✦
             </span>
           </div>
 
           {/* Title */}
           <h2
-            className="mb-3 text-4xl font-black uppercase leading-tight animate-burn-in"
-            style={{ color: "var(--text-primary)", fontFamily: '"Bebas Neue", sans-serif', animationDelay: "0.4s" }}
+            className="mb-3 text-3xl font-black uppercase leading-tight animate-burn-in"
+            style={{ 
+              color: "var(--text-primary)", 
+              fontFamily: '"Bebas Neue", sans-serif',
+              animationDelay: "0.2s"
+            }}
           >
-            Tu Cocina Secreta Está Lista
+            Tu cocina secreta está lista
           </h2>
 
           {/* Subtitle */}
           <p
-            className="mb-8 text-sm leading-relaxed animate-burn-in"
-            style={{ color: "var(--text-secondary)", animationDelay: "0.6s" }}
+            className="mb-8 text-sm animate-burn-in"
+            style={{ color: "var(--text-secondary)", animationDelay: "0.4s" }}
           >
-            Tu perfil es compatible. Hemos seleccionado las recetas ideales para ti.
+            Redirigiendo...
           </p>
 
-          {/* Summary */}
-          <div className="mb-8 flex gap-4 animate-fade-content" style={{ animationDelay: "0.8s" }}>
-            {[
-              { label: "Objetivo", value: motivationAnswer },
-              { label: "Nivel", value: levelAnswer },
-            ].map((item, i) => (
-              <div key={i} className="flex-1 rounded-xl p-3" style={{ background: "var(--card-bg)", border: "1px solid var(--border-inactive)" }}>
-                <p className="mb-1 text-xs uppercase tracking-widest" style={{ color: "var(--text-tertiary)" }}>
-                  {item.label}
-                </p>
-                <p className="font-medium" style={{ color: "var(--text-primary)" }}>
-                  {item.value}
-                </p>
-              </div>
-            ))}
+          {/* Progress Bar at 100% with glow */}
+          <div className="mx-auto w-64 h-1 rounded-full" style={{ backgroundColor: "var(--border-inactive)" }}>
+            <div 
+              className="h-full rounded-full"
+              style={{
+                width: "100%",
+                background: "linear-gradient(90deg, var(--accent-dark) 0%, var(--accent-main) 50%, var(--accent-light) 100%)",
+                boxShadow: "0 0 20px rgba(245, 158, 11, 0.8), 0 0 40px rgba(245, 158, 11, 0.4)",
+              }}
+            />
           </div>
-
-          {/* CTA Button */}
-          <button
-            onClick={enterKitchen}
-            className="w-full rounded-2xl py-6 px-8 text-2xl font-black uppercase tracking-widest transition-all hover:-translate-y-0.5 animate-glow-pulse"
-            style={{
-              background: "linear-gradient(135deg, var(--cta-red) 0%, var(--orange) 50%, var(--accent-dark) 100%)",
-              color: "var(--text-primary)",
-              boxShadow: "0 4px 25px rgba(220, 38, 38, 0.5)",
-              fontFamily: '"Bebas Neue", sans-serif',
-              animation: `fadeContent 0.5s ease-out, glowPulse 3s ease-in-out`,
-              animationDelay: "1s, 1s",
-            }}
-          >
-            🔥 Entrar a la Cocina
-          </button>
-
-          {/* Social Proof */}
-          <p className="mt-6 text-xs animate-fade-content" style={{ color: "var(--text-tertiary)", animationDelay: "1.2s" }}>
-            +3,500 personas ya accedieron · Acceso inmediato
-          </p>
         </div>
       </div>
     )
