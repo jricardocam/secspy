@@ -9,10 +9,10 @@ const COUNTDOWN_SECONDS = 5
 
 const PRODUCTO = {
   nombre: "LA COCINA SECRETA",
-  descripcion: "Pack Completo \u00B7 14 Gu\u00EDas",
+  descripcion: "Pack Completo · 14 Guías",
   imagen: "/food-burger.jpg",
-  precioOriginal: "$67",
-  precioOferta: "$10 USD",
+  precioOriginal: "$9,90",
+  precioOferta: "$9,90",
   rating: 5,
   resenas: 47,
   badge: "73 personas vieron esto hoy",
