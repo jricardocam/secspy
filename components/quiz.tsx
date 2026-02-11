@@ -91,7 +91,7 @@ export function Quiz() {
       progress += 1
       setProgressPercent(progress)
       if (progress >= 30) clearInterval(preparingInterval)
-    }, 50)
+    }, 80)
 
     // Después de 1.5s, iniciar revelación de comida
     setTimeout(() => {
