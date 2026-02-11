@@ -299,7 +299,7 @@ export function SalesPage() {
           <div className="mb-6 inline-block rounded-lg border border-[#00ff41]/30 bg-[#00ff41]/10 px-6 py-4">
             {/* CAMBIO 3: Precio ancla ajustado para credibilidad */}
             <p className="text-sm text-gray-500 line-through">Valor real: $67 USD</p>
-            <p className="text-3xl font-bold text-[#00ff41]">$10 USD </p>
+            <p className="text-3xl font-bold text-[#00ff41]">$9,90 USD </p>
             <p className="text-xs text-gray-400">Pago único - Oferta de Lanzamiento</p>
           </div>
         </div>
@@ -332,7 +332,7 @@ export function SalesPage() {
           >
             {/* CAMBIO 4: Texto de botón optimizado para acción */}
             <Button className="w-full bg-[#00ff41] py-6 text-base font-bold text-black hover:bg-[#00ff41]/90 shadow-[0_0_15px_rgba(0,255,65,0.3)]">
-              🔓 DESCARGAR ARCHIVOS ($10 USD)
+              🔓 DESCARGAR ARCHIVOS ($9,90 USD)
             </Button>
           </a>
         </div>
