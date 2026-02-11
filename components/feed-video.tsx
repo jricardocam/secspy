@@ -25,6 +25,8 @@ export function FeedVideo() {
   const progressRef = useRef<HTMLDivElement>(null)
 
   const [muted, setMuted] = useState(true)
+  const [videoStarted, setVideoStarted] = useState(false)
+  const [audioActive, setAudioActive] = useState(false)
   const [showCard, setShowCard] = useState(false)
   const [videoEnded, setVideoEnded] = useState(false)
   const [showEndOverlay, setShowEndOverlay] = useState(false)
@@ -32,6 +34,7 @@ export function FeedVideo() {
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS)
   const [videoError, setVideoError] = useState(false)
   const [videoProgress, setVideoProgress] = useState(0)
+  const autoplayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const goToOferta = useCallback(() => {
     if (redirectedRef.current) return
@@ -39,21 +42,29 @@ export function FeedVideo() {
     router.push(URL_DESTINO)
   }, [router])
 
-  // Auto-play muted on mount
-  useEffect(() => {
+  const startVideo = useCallback(() => {
     const video = videoRef.current
-    if (!video) return
-
+    if (!video || videoStarted) return
+    setVideoStarted(true)
     const playPromise = video.play()
     if (playPromise !== undefined) {
       playPromise.catch(() => {
-        // Autoplay blocked, try muted
         video.muted = true
         setMuted(true)
         video.play().catch(() => setVideoError(true))
       })
     }
-  }, [])
+  }, [videoStarted])
+
+  // Auto-play after 4 seconds if user hasn't clicked audio button
+  useEffect(() => {
+    autoplayTimerRef.current = setTimeout(() => {
+      startVideo()
+    }, 4000)
+    return () => {
+      if (autoplayTimerRef.current) clearTimeout(autoplayTimerRef.current)
+    }
+  }, [startVideo])
 
   // Show floating card after delay
   useEffect(() => {
@@ -125,8 +136,27 @@ export function FeedVideo() {
   const handleMute = () => {
     const video = videoRef.current
     if (!video) return
-    video.muted = !muted
-    setMuted(!muted)
+
+    // If video hasn't started yet, start it immediately with audio
+    if (!videoStarted) {
+      if (autoplayTimerRef.current) clearTimeout(autoplayTimerRef.current)
+      video.muted = false
+      setMuted(false)
+      setAudioActive(true)
+      setVideoStarted(true)
+      video.play().catch(() => {
+        video.muted = true
+        setMuted(true)
+        video.play().catch(() => setVideoError(true))
+      })
+      return
+    }
+
+    // Toggle mute if video is already playing
+    const newMuted = !muted
+    video.muted = newMuted
+    setMuted(newMuted)
+    setAudioActive(!newMuted)
   }
 
   // --- ERROR STATE ---
@@ -197,9 +227,9 @@ export function FeedVideo() {
           backdropFilter: "blur(8px)",
           WebkitBackdropFilter: "blur(8px)",
           zIndex: 30,
-          transition: "opacity 0.3s ease",
-          opacity: showCard ? 0 : 1,
-          pointerEvents: showCard ? "none" : "auto",
+          transition: "opacity 0.5s ease",
+          opacity: audioActive ? 0 : 1,
+          pointerEvents: audioActive ? "none" : "auto",
         }}
         aria-label={muted ? "Activar sonido" : "Silenciar"}
       >
