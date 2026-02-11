@@ -267,7 +267,7 @@ export function FeedVideo() {
             <span className="text-xs font-bold text-white leading-tight truncate">La Bóveda Secreta (14 PDFs)</span>
             <div className="flex items-center gap-2 mt-0.5">
                <span className="text-[10px] font-medium text-white/90">4.9 ★★★★★</span>
-               <span className="rounded bg-white px-1 py-0.5 text-[9px] font-bold text-[#FE2C55]">$10 USD</span>
+               <span className="rounded bg-white px-1 py-0.5 text-[9px] font-bold text-[#FE2C55]">$9,90 USD</span>
             </div>
           </div>
           <ChevronRight className="ml-auto h-5 w-5 text-white/80 shrink-0" />
