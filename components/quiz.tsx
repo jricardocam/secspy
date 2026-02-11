@@ -266,7 +266,7 @@ export function Quiz() {
         </div>
 
         {/* Centered Content */}
-        <div className="relative z-10 flex-1 flex items-center justify-center py-8">
+        <div className="relative z-10 flex-1 flex items-start justify-center pt-6">
           <div className="w-full max-w-[440px]">
             {/* Category Badge */}
             <div
