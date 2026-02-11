@@ -353,58 +353,7 @@ export function Quiz() {
           </p>
         </div>
 
-        <style jsx global>{`
-          @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap');
 
-          @keyframes fadeSlideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          @keyframes fadeContent {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          @keyframes floatUp {
-            0% { opacity: 0; transform: translateY(0) scale(1); }
-            15% { opacity: 0.6; }
-            100% { opacity: 0; transform: translateY(-100px) scale(0.2); }
-          }
-          @keyframes glowPulse {
-            0%, 100% { box-shadow: 0 0 15px rgba(245,158,11,0.2); }
-            50% { box-shadow: 0 0 30px rgba(245,158,11,0.4), 0 0 50px rgba(234,88,12,0.15); }
-          }
-          @keyframes flicker {
-            0%, 100% { opacity: 1; transform: scaleX(1); }
-            25% { opacity: 0.92; transform: scaleX(0.98); }
-            75% { opacity: 0.95; transform: scaleX(1.02); }
-          }
-          @keyframes scaleIn {
-            from { opacity: 0; transform: scale(0.7); }
-            to { opacity: 1; transform: scale(1); }
-          }
-          @keyframes foodReveal {
-            0% { opacity: 0; filter: blur(12px); transform: scale(0.85); }
-            60% { opacity: 1; filter: blur(3px); transform: scale(1.02); }
-            100% { opacity: 1; filter: blur(0); transform: scale(1); }
-          }
-          @keyframes smokeExpand {
-            0% { opacity: 0.4; transform: scale(0.8); }
-            100% { opacity: 0; transform: scale(1.8); }
-          }
-          @keyframes burnIn {
-            0% { opacity: 0; filter: blur(6px) brightness(1.8); }
-            50% { opacity: 0.8; filter: blur(2px) brightness(1.3); }
-            100% { opacity: 1; filter: blur(0) brightness(1); }
-          }
-          @keyframes optionSlideIn {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          @keyframes btnGlow {
-            0%, 100% { box-shadow: 0 4px 24px rgba(220,38,38,0.3); }
-            50% { box-shadow: 0 4px 32px rgba(220,38,38,0.5), 0 0 15px rgba(245,158,11,0.2); }
-          }
-        `}</style>
       </div>
     )
   }
@@ -552,8 +501,7 @@ export function Quiz() {
                       : "none",
                     cursor: selectedOption !== null ? "default" : "pointer",
                     transition: "all 0.25s ease",
-                    animation: `optionSlideIn 0.35s ease-out ${i * 0.08}s both`,
-                    opacity: 0,
+                    animation: `optionSlideIn 0.35s ease-out ${i * 0.08}s forwards`,
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
@@ -917,4 +865,65 @@ export function Quiz() {
   }
 
   return null
+}
+
+// Wrap the Quiz in a layout that always has the global styles mounted
+export default function QuizPage() {
+  return (
+    <>
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+        @keyframes fadeSlideUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeContent {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes floatUp {
+          0% { opacity: 0; transform: translateY(0) scale(1); }
+          15% { opacity: 0.6; }
+          100% { opacity: 0; transform: translateY(-100px) scale(0.2); }
+        }
+        @keyframes glowPulse {
+          0%, 100% { box-shadow: 0 0 15px rgba(245,158,11,0.2); }
+          50% { box-shadow: 0 0 30px rgba(245,158,11,0.4), 0 0 50px rgba(234,88,12,0.15); }
+        }
+        @keyframes flicker {
+          0%, 100% { opacity: 1; transform: scaleX(1); }
+          25% { opacity: 0.92; transform: scaleX(0.98); }
+          75% { opacity: 0.95; transform: scaleX(1.02); }
+        }
+        @keyframes scaleIn {
+          from { opacity: 0; transform: scale(0.7); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes foodReveal {
+          0% { opacity: 0; filter: blur(12px); transform: scale(0.85); }
+          60% { opacity: 1; filter: blur(3px); transform: scale(1.02); }
+          100% { opacity: 1; filter: blur(0); transform: scale(1); }
+        }
+        @keyframes smokeExpand {
+          0% { opacity: 0.4; transform: scale(0.8); }
+          100% { opacity: 0; transform: scale(1.8); }
+        }
+        @keyframes burnIn {
+          0% { opacity: 0; filter: blur(6px) brightness(1.8); }
+          50% { opacity: 0.8; filter: blur(2px) brightness(1.3); }
+          100% { opacity: 1; filter: blur(0) brightness(1); }
+        }
+        @keyframes optionSlideIn {
+          from { transform: translateY(12px); }
+          to { transform: translateY(0); }
+        }
+        @keyframes btnGlow {
+          0%, 100% { box-shadow: 0 4px 24px rgba(220,38,38,0.3); }
+          50% { box-shadow: 0 4px 32px rgba(220,38,38,0.5), 0 0 15px rgba(245,158,11,0.2); }
+        }
+      `}</style>
+      <Quiz />
+    </>
+  )
 }
