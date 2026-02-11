@@ -233,99 +233,102 @@ export function Quiz() {
     const progress = ((currentQuestion + 1) / questions.length) * 100
 
     return (
-      <div className="relative flex min-h-screen flex-col items-center justify-center px-5" style={{ backgroundColor: "var(--background)" }}>
-        <div className="relative z-10 w-full max-w-[440px]">
-          {/* Progress Bar */}
-          <div className="mb-8">
-            <div className="mb-3 flex items-center justify-between">
-              <div className="flex items-center gap-2" style={{ color: "var(--accent-main)" }}>
-                <span className="text-sm">🔥</span>
-                <span className="text-xs font-black uppercase tracking-widest" style={{ fontFamily: '"Bebas Neue", sans-serif' }}>
-                  Tu Perfil de Chef
-                </span>
-              </div>
-              <span className="text-xs" style={{ color: "var(--text-secondary)" }}>
-                {currentQuestion + 1}/3
+      <div className="relative flex min-h-screen flex-col px-5" style={{ backgroundColor: "var(--background)" }}>
+        {/* Progress Bar - Fixed at top */}
+        <div className="relative z-10 w-full max-w-[440px] mx-auto pt-8">
+          <div className="mb-3 flex items-center justify-between">
+            <div className="flex items-center gap-2" style={{ color: "var(--accent-main)" }}>
+              <span className="text-sm">🔥</span>
+              <span className="text-xs font-black uppercase tracking-widest" style={{ fontFamily: '"Bebas Neue", sans-serif' }}>
+                Tu Perfil de Chef
               </span>
             </div>
-            <div
-              className="h-1 rounded-full transition-all duration-600"
-              style={{
-                background: "var(--border-inactive)",
-                boxShadow: `0 0 10px rgba(245, 158, 11, 0.3)`,
-              }}
-            >
-              <div
-                className="h-full rounded-full transition-all duration-600"
-                style={{
-                  width: `${progress}%`,
-                  background: "linear-gradient(90deg, var(--accent-dark) 0%, var(--accent-main) 50%, var(--accent-light) 100%)",
-                  boxShadow: "0 0 10px rgba(245, 158, 11, 0.5)",
-                }}
-              />
-            </div>
-          </div>
-
-          {/* Category Badge */}
-          <div
-            className="mb-8 inline-block rounded-full px-4 py-1.5"
-            style={{
-              background: "rgba(245, 158, 11, 0.15)",
-              border: "1px solid rgba(245, 158, 11, 0.3)",
-            }}
-          >
-            <span className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest" style={{ color: "var(--accent-main)", fontFamily: '"Bebas Neue", sans-serif' }}>
-              <span>🔥</span>
-              {q.category}
+            <span className="text-xs" style={{ color: "var(--text-secondary)" }}>
+              {currentQuestion + 1}/3
             </span>
           </div>
-
-          {/* Question */}
-          <h2
-            className={`mb-2 text-4xl font-black leading-tight uppercase transition-all duration-300 ${fadeOut ? "opacity-0" : "opacity-100 animate-in fade-in slide-in-from-bottom-4"}`}
-            style={{ color: "var(--text-primary)", fontFamily: '"Bebas Neue", sans-serif' }}
+          <div
+            className="h-1 rounded-full transition-all duration-600"
+            style={{
+              background: "var(--border-inactive)",
+              boxShadow: `0 0 10px rgba(245, 158, 11, 0.3)`,
+            }}
           >
-            {q.question}
-          </h2>
+            <div
+              className="h-full rounded-full transition-all duration-600"
+              style={{
+                width: `${progress}%`,
+                background: "linear-gradient(90deg, var(--accent-dark) 0%, var(--accent-main) 50%, var(--accent-light) 100%)",
+                boxShadow: "0 0 10px rgba(245, 158, 11, 0.5)",
+              }}
+            />
+          </div>
+        </div>
 
-          {/* Subtitle */}
-          <p className={`mb-8 text-sm leading-relaxed transition-all duration-300 ${fadeOut ? "opacity-0" : "opacity-100"}`} style={{ color: "var(--text-secondary)" }}>
-            {q.subtitle}
-          </p>
+        {/* Centered Content */}
+        <div className="relative z-10 flex-1 flex items-center justify-center">
+          <div className="w-full max-w-[440px]">
+            {/* Category Badge */}
+            <div
+              className="mb-8 inline-block rounded-full px-4 py-1.5"
+              style={{
+                background: "rgba(245, 158, 11, 0.15)",
+                border: "1px solid rgba(245, 158, 11, 0.3)",
+              }}
+            >
+              <span className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest" style={{ color: "var(--accent-main)", fontFamily: '"Bebas Neue", sans-serif' }}>
+                <span>🔥</span>
+                {q.category}
+              </span>
+            </div>
 
-          {/* Options */}
-          <div className={`space-y-3 transition-all duration-300 ${fadeOut ? "opacity-0" : "opacity-100"}`}>
-            {q.options.map((option, i) => (
-              <button
-                key={i}
-                onClick={() => handleSelectAnswer(option.text)}
-                className="group w-full rounded-2xl border-2 p-5 text-left transition-all duration-200 hover:scale-105"
-                style={{
-                  background: "var(--card-bg)",
-                  borderColor: "var(--border-inactive)",
-                  animation: `slideUp 0.4s ease-out ${i * 0.1}s both`,
-                }}
-              >
-                <div className="flex items-center gap-4">
-                  <span className="text-2xl">{option.emoji}</span>
-                  <div className="flex-1">
-                    <p className="font-semibold" style={{ color: "var(--text-primary)" }}>
-                      {option.text}
-                    </p>
-                    {option.subtext && <p className="text-xs" style={{ color: "var(--text-secondary)" }}>
-                      {option.subtext}
-                    </p>}
+            {/* Question */}
+            <h2
+              className={`mb-2 text-4xl font-black leading-tight uppercase transition-all duration-300 ${fadeOut ? "opacity-0" : "opacity-100 animate-in fade-in slide-in-from-bottom-4"}`}
+              style={{ color: "var(--text-primary)", fontFamily: '"Bebas Neue", sans-serif' }}
+            >
+              {q.question}
+            </h2>
+
+            {/* Subtitle */}
+            <p className={`mb-8 text-sm leading-relaxed transition-all duration-300 ${fadeOut ? "opacity-0" : "opacity-100"}`} style={{ color: "var(--text-secondary)" }}>
+              {q.subtitle}
+            </p>
+
+            {/* Options */}
+            <div className={`space-y-3 transition-all duration-300 ${fadeOut ? "opacity-0" : "opacity-100"}`}>
+              {q.options.map((option, i) => (
+                <button
+                  key={i}
+                  onClick={() => handleSelectAnswer(option.text)}
+                  className="group w-full rounded-2xl border-2 p-5 text-left transition-all duration-200 hover:scale-105"
+                  style={{
+                    background: "var(--card-bg)",
+                    borderColor: "var(--border-inactive)",
+                    animation: `slideUp 0.4s ease-out ${i * 0.1}s both`,
+                  }}
+                >
+                  <div className="flex items-center gap-4">
+                    <span className="text-2xl">{option.emoji}</span>
+                    <div className="flex-1">
+                      <p className="font-semibold" style={{ color: "var(--text-primary)" }}>
+                        {option.text}
+                      </p>
+                      {option.subtext && <p className="text-xs" style={{ color: "var(--text-secondary)" }}>
+                        {option.subtext}
+                      </p>}
+                    </div>
+                    <div
+                      className="h-5 w-5 rounded-full border-2"
+                      style={{
+                        borderColor: "var(--border-inactive)",
+                        backgroundColor: "transparent",
+                      }}
+                    />
                   </div>
-                  <div
-                    className="h-5 w-5 rounded-full border-2"
-                    style={{
-                      borderColor: "var(--border-inactive)",
-                      backgroundColor: "transparent",
-                    }}
-                  />
-                </div>
-              </button>
-            ))}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
